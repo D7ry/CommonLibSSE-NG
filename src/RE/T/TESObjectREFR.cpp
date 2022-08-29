@@ -257,8 +257,8 @@ namespace RE
 
 	float TESObjectREFR::GetHeadingAngle(const NiPoint3& a_pos, bool a_abs)
 	{
-		float theta = NiFastATan2(a_pos.x - GetPositionX(), a_pos.y - GetPositionY());
-		float heading = rad_to_deg(theta - GetAngleZ());
+		auto theta = std::atan2f(a_pos.x - this->GetPositionX(), a_pos.y - this->GetPositionY());
+		auto heading = static_cast<float>(180.0f / 3.1415927 * (theta - this->GetAngleZ()));
 
 		if (heading < -180.0f) {
 			heading += 360.0f;
