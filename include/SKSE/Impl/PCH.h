@@ -32,6 +32,7 @@
 #include <memory>
 #include <mutex>
 #include <new>
+#include <numbers>
 #include <numeric>
 #include <optional>
 #include <random>
@@ -58,7 +59,6 @@ static_assert(
 	"wrap std::time_t instead");
 
 #pragma warning(push)
-#include <binary_io/file_stream.hpp>
 #include <fmt/format.h>
 #include <spdlog/spdlog.h>
 #pragma warning(pop)

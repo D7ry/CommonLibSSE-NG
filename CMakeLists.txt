@@ -1,50 +1,55 @@
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.21)
 
-option(SKSE_SUPPORT_XBYAK "Enables trampoline support for Xbyak." OFF)
+# singleton target across multiple projects
+if(TARGET CommonLibSSE)
+	return() 
+endif()
+
+# options if not defined
+option(SKSE_SUPPORT_XBYAK "Enables trampoline support for Xbyak." ON)
 option(ENABLE_SKYRIM_SE "Enable support for Skyrim SE in the dynamic runtime feature." ON)
 option(ENABLE_SKYRIM_AE "Enable support for Skyrim AE in the dynamic runtime feature." ON)
 option(ENABLE_SKYRIM_VR "Enable support for Skyrim VR in the dynamic runtime feature." ON)
-option(BUILD_TESTS "Enable building of the unit tests." ON)
-message("Options:")
-message("\tEnable Xbyak: ${SKSE_SUPPORT_XBYAK}")
-message("\tEnable Skyrim SE: ${ENABLE_SKYRIM_SE}")
-message("\tEnable Skyrim AE: ${ENABLE_SKYRIM_AE}")
-message("\tEnable Skyrim VR: ${ENABLE_SKYRIM_VR}")
-message("\tBuild Tests: ${BUILD_TESTS}")
 
+# ensure runtime
 if(NOT ENABLE_SKYRIM_SE AND NOT ENABLE_SKYRIM_AE AND NOT ENABLE_SKYRIM_VR)
 	message(FATAL_ERROR "At least one Skyrim runtime must be supported by the CommonLibSSE build.")
 endif()
 
+# standards & flags
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_DEBUF OFF)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE FILEPATH "")
+
+# info
 project(
 	CommonLibSSE
 	LANGUAGES CXX
-	VERSION 3.1.0
+	VERSION 3.2.4
 )
 
-include(CheckIPOSupported)
 include(GNUInstallDirs)
 
-if("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
-	message(FATAL_ERROR "in-source builds are not allowed")
+# out-of-source builds only
+if(${PROJECT_SOURCE_DIR} STREQUAL ${PROJECT_BINARY_DIR})
+	message(FATAL_ERROR "In-source builds are not allowed.")
 endif()
 
+# dependencies
 find_package(binary_io CONFIG REQUIRED)
 find_package(spdlog REQUIRED CONFIG)
 find_path(FAST_CPP_CSV_PARSER_INCLUDE_DIRS "csv.h")
 
-include(cmake/sourcelist.cmake)
-include(cmake/testlist.cmake)
-
+# source files
+execute_process(COMMAND powershell -ExecutionPolicy Bypass -File "${CMAKE_CURRENT_SOURCE_DIR}/!Update.ps1" "SOURCEGEN" "${PROJECT_VERSION}" "${CMAKE_CURRENT_BINARY_DIR}")
+include(${CMAKE_CURRENT_BINARY_DIR}/sourcelist.cmake)
 source_group(
 	TREE "${CMAKE_CURRENT_SOURCE_DIR}"
 	FILES ${SOURCES}
 )
-
-check_ipo_supported(RESULT USE_IPO OUTPUT IPO_OUTPUT)
-if(USE_IPO)
-	set(CMAKE_INTERPROCEDURAL_OPTIMIZATION "$<$<CONFIG:RELEASE>:ON>")
-endif()
 
 add_library(
 	"${PROJECT_NAME}"
@@ -68,12 +73,6 @@ target_compile_definitions(
 		HAS_SKYRIM_MULTI_TARGETING=1
 )
 
-target_compile_features(
-	"${PROJECT_NAME}"
-	PUBLIC
-		cxx_std_20
-)
-
 if (MSVC)
 	target_compile_options(
 		"${PROJECT_NAME}"
@@ -91,6 +90,7 @@ if (MSVC)
 			/wd4201 # nonstandard extension used : nameless struct/union
 			/wd4265 # 'type': class has virtual functions, but its non-trivial destructor is not virtual; instances of this class may not be destructed correctly
 			/wd4266 # 'function' : no override available for virtual member function from base 'type'; function is hidden
+			/wd4267 # 'var' : conversion from 'size_t' to 'type', possible loss of data
 			/wd4371 # 'classname': layout of class may have changed from a previous version of the compiler due to better packing of member 'member'
 			/wd4514 # 'function' : unreferenced inline function has been removed
 			/wd4582 # 'type': constructor is not implicitly called
@@ -107,14 +107,6 @@ if (MSVC)
 			/wd5053 # support for 'explicit(<expr>)' in C++17 and earlier is a vendor extension
 			/wd5204 # 'type-name': class has virtual functions, but its trivial destructor is not virtual; instances of objects derived from this class may not be destructed correctly
 			/wd5220 # 'member': a non-static data member with a volatile qualified type no longer implies that compiler generated copy / move constructors and copy / move assignment operators are not trivial
-	)
-endif()
-if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-	target_compile_options(
-			"${PROJECT_NAME}"
-			PUBLIC
-				-Wno-overloaded-virtual                   # function matches parent virtual function but is not an override (Clang gives false positives on this warning)
-				-Wno-delete-non-abstract-non-virtual-dtor # deletion of polymorphic type which has a non-virtual destructor (necessary for SKSE proxy types, as SKSE does this)
 	)
 endif()
 
@@ -175,64 +167,12 @@ install(
 	DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
 )
 
-if(BUILD_TESTS)
-	find_package(Catch2 CONFIG REQUIRED)
-	include(CTest)
-	include(Catch)
-
-	add_executable(
-		"${PROJECT_NAME}Tests"
-			${TESTS}
-	)
-
-	target_include_directories(
-		"${PROJECT_NAME}Tests"
-		PUBLIC
-			"$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-			"$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
-	)
-
-	target_compile_features(
-		"${PROJECT_NAME}Tests"
-		PUBLIC
-			cxx_std_23
-	)
-
-	target_compile_definitions(
-		"${PROJECT_NAME}Tests"
-		PUBLIC
-			ENABLE_COMMONLIBSSE_TESTING=1
-	)
-
-	if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-		target_compile_definitions(
-			"${PROJECT_NAME}Tests"
-			PRIVATE
-				__cpp_consteval
-				__cpp_lib_format
-		)
-	endif()
-
-	target_link_libraries(
-		"${PROJECT_NAME}Tests"
-		PRIVATE
-			${PROJECT_NAME}
-			Catch2::Catch2WithMain
-	)
-
-	target_precompile_headers(
-		"${PROJECT_NAME}Tests"
-		PRIVATE
-			include/SKSE/Impl/PCH.h
-	)
-
-	file(COPY
-			tests/REL/version-1-4-15-0.csv
-			tests/REL/version-1-5-97-0.bin
-			tests/REL/versionlib-1-6-353-0.bin
-		 DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/Data/SKSE/Plugins/"
-	)
-
-	catch_discover_tests("${PROJECT_NAME}Tests")
-	add_test(NAME "${PROJECT_NAME}Tests" COMMAND "${PROJECT_NAME}Tests")
+# called via !Rebuild.ps1
+if(DEFINED GROUP)
+set_target_properties(
+	${PROJECT_NAME}
+	PROPERTIES
+	FOLDER
+	${GROUP}
+)
 endif()

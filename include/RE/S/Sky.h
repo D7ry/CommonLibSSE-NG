@@ -51,8 +51,12 @@ namespace RE
 
 		static Sky* GetSingleton();
 
-		[[nodiscard]] bool GetIsRaining() const;
-		[[nodiscard]] bool GetIsSnowing() const;
+		[[nodiscard]] bool IsRaining() const;
+		[[nodiscard]] bool IsSnowing() const;
+
+		void SetWeather(RE::TESWeather* apWeather, bool abOverride, bool abAccelerate);
+		void ForceWeather(RE::TESWeather* apWeather, bool abOverride);
+		void ResetWeather();
 
 		// members
 		NiPointer<BSMultiBoundNode>           root;                            // 008

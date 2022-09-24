@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RE/A/ActorPackage.h"
+#include "RE/B/BGSDefaultObjectManager.h"
 #include "RE/B/BSTArray.h"
 #include "RE/B/BSTList.h"
 
@@ -144,6 +145,7 @@ namespace RE
 		};
 		static_assert(sizeof(Data0B8) == 0x38);
 
+		void                    ClearActionHeadtrackTarget(bool a_defaultHold);
 		void                    ClearMuzzleFlashes();
 		float                   GetCachedHeight() const;
 		bhkCharacterController* GetCharController();
@@ -162,6 +164,9 @@ namespace RE
 		bool                    InLowProcess() const;
 		bool                    IsArrested() const;
 		bool                    IsGhost() const;
+		void                    KnockExplosion(Actor* a_actor, const NiPoint3& a_location, float a_magnitude);
+		bool                    PlayIdle(Actor* a_attacker, DEFAULT_OBJECT a_smth, TESIdleForm* a_idle, bool a5, bool a6, Actor* a_target) const;
+		void                    SetActorsDetectionEvent(Actor* a_actor, const NiPoint3& a_location, std::int32_t a_soundLevel, TESObjectREFR* a_ref);
 		void                    SetArrested(bool a_arrested);
 		void                    SetCachedHeight(float a_height);
 		void                    SetHeadtrackTarget(Actor* a_owner, NiPoint3& a_targetPosition);

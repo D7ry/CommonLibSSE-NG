@@ -34,13 +34,13 @@ namespace RE
 		void FinishLoadGame(BGSLoadFormBuffer* a_buf) override;  // 11
 		void Revert(BGSLoadFormBuffer* a_buf) override;          // 12
 #ifndef SKYRIM_CROSS_VR
-		void Unk_A9(void) override;               // A9
+		void      Process3D() override;               // A9
 		void UpdateImpl(float a_delta) override;  // AB
-		void Unk_AC(void) override;               // AC
-		void Unk_B8(void) override;               // B8 - { return 0; }
-		void Unk_BC(void) override;               // BC
-		void Unk_BD(void) override;               // BD
-		void Unk_BE(void) override;               // BE
+		bool      ProcessImpacts() override;               // AC
+		bool      GetKillOnCollision() override;               // B8 - { return 0; }
+		bhkShape* GetCollisionShape() override;               // BC
+		void      AddImpact(TESObjectREFR* a_ref, const NiPoint3& a_targetLoc, const NiPoint3& a_velocity, hkpCollidable* a_collidable, std::int32_t a_arg6, std::uint32_t a_arg7) override;               // BD
+		bool      HandleHits(hkpCollidable* a_collidable) override;               // BE
 		void Handle3DLoaded() override;           // C0
 #endif
 
@@ -49,18 +49,41 @@ namespace RE
 
 		inline float GetHeight() const
 		{
-			return initialCollisionSphereRadius * 2;
+			return GetConeRuntimeData().initialCollisionSphereRadius * 2;
+		}
+
+		struct CONE_RUNTIME_DATA
+		{
+#define CONE_RUNTIME_DATA_CONTENT \
+			ImpactResult             impactResult;                  /* 1D8 */ \
+			float                    environmentTimer;              /* 1DC */ \
+			float                    coneAngleTangent;              /* 1E0 */ \
+			float                    initialCollisionSphereRadius;  /* 1E4 */ \
+			NiPoint3                 origin;                        /* 1E8 */ \
+			std::uint32_t            pad1F4;                        /* 1F4 */ \
+			hkRefPtr<hkpSphereShape> collisionShape;                /* 1F8 */ \
+			BSTArray<void*>          collisions;                    /* 200 */
+			
+			CONE_RUNTIME_DATA_CONTENT
+		};
+
+		[[nodiscard]] inline CONE_RUNTIME_DATA& GetConeRuntimeData() noexcept
+		{
+			return REL::RelocateMemberIfNewer<CONE_RUNTIME_DATA>(SKSE::RUNTIME_SSE_1_6_629, this, 0x1D8, 0x1E0);
+		}
+
+		[[nodiscard]] inline const CONE_RUNTIME_DATA& GetConeRuntimeData() const noexcept
+		{
+			return REL::RelocateMemberIfNewer<CONE_RUNTIME_DATA>(SKSE::RUNTIME_SSE_1_6_629, this, 0x1D8, 0x1E0);
 		}
 
 		// members
-		ImpactResult             impactResult;                  // 1D8
-		float                    environmentTimer;              // 1DC
-		float                    coneAngleTangent;              // 1E0
-		float                    initialCollisionSphereRadius;  // 1E4
-		NiPoint3                 origin;                        // 1E8
-		std::uint32_t            pad1F4;                        // 1F4
-		hkRefPtr<hkpSphereShape> collisionShape;                // 1F8
-		BSTArray<void*>          collisions;                    // 200
+#ifndef ENABLE_SKYRIM_AE
+		CONE_RUNTIME_DATA_CONTENT
+#endif
 	};
+#ifndef ENABLE_SKYRIM_AE
 	static_assert(sizeof(ConeProjectile) == 0x218);
+#endif
 }
+#undef CONE_RUNTIME_DATA_CONTENT

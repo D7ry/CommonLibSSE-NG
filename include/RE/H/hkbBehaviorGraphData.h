@@ -5,9 +5,36 @@
 namespace RE
 {
 	class hkbVariableInfo;
-	class hkbEventInfo;
+	struct hkbEventInfo;
 	class hkbVariableBounds;
 	class hkbVariableValueSet;
+
+	struct hkbEventInfo
+	{
+	public:
+		hkbEventInfo() :
+			m_flags(Flags(0)) {}
+
+		/// Whether or not this event should be treated as a sync point.
+		bool isSyncPoint() { return (m_flags.get() & FLAG_SYNC_POINT) != 0; }
+
+		/// Whether or not this event should be raised by clip generators.
+		bool isSilent() { return (m_flags.get() & FLAG_SILENT) != 0; }
+
+		/// Definitions of flags that influence the behavior of events.
+		enum Flags
+		{
+			/// Whether or not clip generators should raise the event.
+			FLAG_SILENT = 0x1,
+
+			/// Whether or not the sync point will be
+			FLAG_SYNC_POINT = 0x2,
+		};
+
+		/// The flags that influence the behavior of events.
+		stl::enumeration<Flags, std::uint32_t> m_flags;
+	};
+	static_assert(sizeof(hkbEventInfo) == 0x4);
 
 	class hkbBehaviorGraphData : public hkReferencedObject
 	{
@@ -20,7 +47,7 @@ namespace RE
 		hkArray<float>                       attributeDefaults;       // 10
 		hkArray<hkbVariableInfo>             variableInfos;           // 20
 		hkArray<hkbVariableInfo>             characterPropertyInfos;  // 30
-		hkArray<hkbVariableInfo>             eventInfos;              // 40
+		hkArray<hkbEventInfo>                eventInfos;              // 40
 		hkArray<hkbVariableBounds>           variableBounds;          // 50
 		uint64_t                             unk60;                   // 60
 		uint64_t                             unk68;                   // 68
