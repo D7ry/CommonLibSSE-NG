@@ -487,6 +487,7 @@ namespace RE
 		void                                    AllowPCDialogue(bool a_talk);
 		[[nodiscard]] bool                      CanAttackActor(Actor* a_actor);
 		[[nodiscard]] bool                      CanFlyHere() const;
+		[[nodiscard]] bool                      UpdateNavPos(const NiPoint3& a_pos, const NiPoint3& a_new_pos, float a_speed, float a_distance) const;
 		[[nodiscard]] bool                      CanOfferServices() const;
 		[[nodiscard]] bool                      CanPickpocket() const;
 		[[nodiscard]] bool                      CanTalkToPlayer() const;
@@ -507,6 +508,7 @@ namespace RE
 		[[nodiscard]] float                     GetActorValueModifier(ACTOR_VALUE_MODIFIER a_modifier, ActorValue a_value) const;
 		[[nodiscard]] InventoryEntryData*       GetAttackingWeapon();
 		[[nodiscard]] const InventoryEntryData* GetAttackingWeapon() const;
+		[[nodiscard]] const float                 GetBoundRadius() const;
 		[[nodiscard]] bhkCharacterController*   GetCharController() const;
 		uint32_t                  GetCollisionFilterInfo(uint32_t& a_outCollisionFilterInfo);
 		[[nodiscard]] NiPointer<Actor>          GetCommandingActor() const;
