@@ -38,10 +38,9 @@ if(${PROJECT_SOURCE_DIR} STREQUAL ${PROJECT_BINARY_DIR})
 	message(FATAL_ERROR "In-source builds are not allowed.")
 endif()
 
-# dependencies
-find_package(binary_io CONFIG REQUIRED)
-find_package(spdlog REQUIRED CONFIG)
-find_path(FAST_CPP_CSV_PARSER_INCLUDE_DIRS "csv.h")
+find_package(fmt CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
+find_path(RAPIDCSV_INCLUDE_DIRS "rapidcsv.h")
 
 # source files
 execute_process(COMMAND powershell -ExecutionPolicy Bypass -File "${CMAKE_CURRENT_SOURCE_DIR}/!Update.ps1" "SOURCEGEN" "${PROJECT_VERSION}" "${CMAKE_CURRENT_BINARY_DIR}")
@@ -77,9 +76,6 @@ if (MSVC)
 	target_compile_options(
 		"${PROJECT_NAME}"
 		PUBLIC
-			/bigobj # support large object file format
-			/utf-8  # assume UTF-8 sources even without a BOM
-
 			# warnings -> errors
 			/we4715	# 'function' : not all control paths return a value
 
@@ -120,13 +116,20 @@ target_include_directories(
 target_include_directories(
 	"${PROJECT_NAME}"
 	PRIVATE
-		${FAST_CPP_CSV_PARSER_INCLUDE_DIRS}
+		${fmt_INCLUDE_DIRS}
+		${spdlog_INCLUDE_DIRS}
+		${RAPIDCSV_INCLUDE_DIRS}
+)
+
+target_compile_definitions(
+	"${PROJECT_NAME}"
+	PUBLIC
 )
 
 target_link_libraries(
 	"${PROJECT_NAME}"
 	PUBLIC
-		binary_io::binary_io
+		fmt::fmt
 		spdlog::spdlog
 		Version.lib
 )
@@ -167,12 +170,58 @@ install(
 	DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
 )
 
-# called via !Rebuild.ps1
-if(DEFINED GROUP)
-set_target_properties(
-	${PROJECT_NAME}
-	PROPERTIES
-	FOLDER
-	${GROUP}
-)
+if(BUILD_TESTS)
+	find_package(Catch2 CONFIG REQUIRED)
+	include(CTest)
+	include(Catch)
+
+	add_executable(
+		"${PROJECT_NAME}Tests"
+			${TESTS}
+	)
+
+	target_include_directories(
+		"${PROJECT_NAME}Tests"
+		PUBLIC
+			"$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+			"$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
+	)
+
+	target_include_directories(
+		"${PROJECT_NAME}Tests"
+		PRIVATE
+			${Catch2_INCLUDE_DIRS}
+			${fmt_INCLUDE_DIRS}
+			${spdlog_INCLUDE_DIRS}
+			${RAPIDCSV_INCLUDE_DIRS}
+	)
+
+	target_compile_definitions(
+		"${PROJECT_NAME}Tests"
+		PUBLIC
+			ENABLE_COMMONLIBSSE_TESTING=1
+	)
+
+	target_link_libraries(
+		"${PROJECT_NAME}Tests"
+		PRIVATE
+			${PROJECT_NAME}
+			Catch2::Catch2
+	)
+
+	target_precompile_headers(
+		"${PROJECT_NAME}Tests"
+		PRIVATE
+			include/SKSE/Impl/PCH.h
+	)
+
+	file(COPY
+			tests/REL/version-1-4-15-0.csv
+			tests/REL/version-1-5-97-0.bin
+			tests/REL/versionlib-1-6-353-0.bin
+		 DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/Data/SKSE/Plugins/"
+	)
+
+	catch_discover_tests("${PROJECT_NAME}Tests")
+	add_test(NAME "${PROJECT_NAME}Tests" COMMAND "${PROJECT_NAME}Tests")
 endif()

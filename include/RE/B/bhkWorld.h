@@ -50,7 +50,6 @@ namespace RE
 			REL::Relocation<float*> worldScaleInverse{ RELOCATION_ID(230692, 187407) };
 			return *worldScaleInverse;
 		}
-		
 		// members
 		std::uint8_t                  unk0020[0x320];             // 0020
 		std::uint8_t                  unk0340[0x6400];            // 0340

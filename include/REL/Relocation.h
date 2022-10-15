@@ -304,7 +304,7 @@ namespace REL {
         decltype(auto) invoke_member_function_non_pod(F &&a_func, First &&a_first, Rest &&... a_rest)  //
         noexcept(std::is_nothrow_invocable_v<F, First, Rest...>) {
             using result_t = std::invoke_result_t<F, First, Rest...>;
-			alignas(result_t) std::byte result[sizeof(result_t)];
+            std::aligned_storage_t<sizeof(result_t), alignof(result_t)> result;
 
             using func_t = member_function_non_pod_type_t<F>;
             auto func = stl::unrestricted_cast<func_t *>(std::forward<F>(a_func));
@@ -402,7 +402,7 @@ namespace REL {
                 _impl{a_v1, a_v2, a_v3, a_v4} {}
 
         explicit constexpr Version(std::string_view a_version) {
-            std::array<std::size_t, 4> powers{1, 1, 1, 1};
+            std::array<value_type, 4> powers{1, 1, 1, 1};
             std::size_t position = 0;
             for (std::size_t i = 0; i < a_version.size(); ++i) {
                 if (a_version[i] == '.') {
@@ -421,7 +421,7 @@ namespace REL {
                     throw std::invalid_argument("Invalid character in version number.");
                 } else {
                     powers[position] /= 10;
-                    _impl[position] += (a_version[i] - '0') * powers[position];
+                    _impl[position] += static_cast<value_type>((a_version[i] - '0') * powers[position]);
                 }
             }
         }
@@ -654,6 +654,7 @@ namespace REL {
             return _instance;
         }
 
+#ifdef ENABLE_COMMONLIBSSE_TESTING
         /**
          * Forcibly set the singleton <code>Module</code> instance to a specific executable file.
          *
@@ -701,7 +702,7 @@ namespace REL {
             unsigned long length = bufferSize * sizeof(wchar_t);
             std::uint8_t value[bufferSize];
             if (WinAPI::RegGetValueW(WinAPI::HKEY_LOCAL_MACHINE, subKey, L"Installed Path", 0x20002, nullptr, value, &length) !=
-                0x0) {
+                0) {
                 return false;
             }
             std::filesystem::path installPath(reinterpret_cast<wchar_t *>(value));
@@ -751,11 +752,11 @@ namespace REL {
             return true;
         }
 
-		static void reset()
-		{
-			_initialized = false;
-			_instance.clear();
-		}
+        static void reset() {
+            _initialized = false;
+            _instance.clear();
+        }
+#endif
 
         [[nodiscard]] std::uintptr_t base() const noexcept { return _base; }
 
@@ -1028,6 +1029,7 @@ namespace REL {
             return _instance;
         }
 
+#ifdef ENABLE_COMMONLIBSSE_TESTING
         [[nodiscard]] static bool inject(std::wstring_view a_filePath, Format a_format) {
             return inject(a_filePath, a_format, Module::get().version());
         }
@@ -1051,6 +1053,7 @@ namespace REL {
             _instance.clear();
             _initialized = false;
         }
+#endif
 
         [[nodiscard]] inline std::size_t id2offset(std::uint64_t a_id) const {
             mapping_t elem{a_id, 0};
