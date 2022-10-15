@@ -4,28 +4,13 @@
   "version-semver": "3.2.4",
   "port-version": 0,
   "description": "A fork of CommonLibSSE with advanced features for modern SKSE development.",
-  "homepage": "https://github.com/CharmedBaryon/CommonLibSSE",
+  "homepage": "https://github.com/max-su-2019/CommonLibSSE",
   "license": "MIT",
   "supports": "windows & x64",
   "dependencies": [
-    {
-      "name": "vcpkg-cmake-config",
-      "host": true
-    },
     "fast-cpp-csv-parser",
     "fmt",
     "rsm-binary-io",
     "spdlog"
-  ],
-  "features": {
-    "tests": {
-      "description": "Build tests for CommonLibSSE.",
-      "dependencies": [
-        "catch2"
-      ]
-    }
-  },
-  "default-features": [
-    "tests"
   ]
 }

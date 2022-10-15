@@ -1,35 +1,45 @@
 #pragma once
 
 #include "RE/B/BGSActionData.h"
+
 namespace RE
 {
-	class TESActionData
+	class TESActionData : public BGSActionData
 	{
 	public:
 		inline static constexpr auto RTTI = RTTI_TESActionData;
+		inline static constexpr auto VTABLE = VTABLE_TESActionData;
 
-		virtual ~TESActionData();  // 00
+		virtual ~TESActionData() override;  // 00
 
-		virtual void function1() = 0;  //01
-		virtual void function2() = 0;  //02
-		virtual void function3() = 0;  //03
-		virtual void function4() = 0;  //04
-		virtual void function5() = 0;  //05
+		// override (ActionInput)
+		ActorState*            GetSourceActorState() const override;  // 01
+		void                   Unk_02(void) override;                 // 02 - { return 0; }
+		BGSAnimationSequencer* GetSourceSequencer() const override;   // 03
 
-		TESObjectREFR* Subject_8;          //08
-		TESObjectREFR* Target_10;          //10
-		BGSAction*     Action_18;          //18
-		std::int32_t   _unk_20;            //20
-		std::int32_t   _unk_24;            //24
-		BSFixedString  AnimationEvent_28;  //28
-		std::int64_t   _unk_30;            //30
-		std::int32_t   _unk_38;            //38
-		std::int32_t   _unk_3C;            //3C
-		std::int64_t   _unk_40;            //40
-		TESIdleForm*   IdleForm_48;        //48
-		std::int64_t   _unk_50;            //50
-		std::int32_t   Flags_58;           //58
-		std::int32_t   _unk_5C;            //5C
+		// override (BGSActionData)
+		BGSActionData* Clone() const override;  // 04
+		bool           Process() override;      // 05
+
+		static TESActionData* Create()
+		{
+			auto tesActionData = malloc<TESActionData>();
+			std::memset(reinterpret_cast<void*>(tesActionData), 0, sizeof(TESActionData));
+			if (tesActionData) {
+				tesActionData->Ctor();
+			}
+			return tesActionData;
+		}
+
+	private:
+		TESActionData* Ctor()
+		{
+			using func_t = decltype(&TESActionData::Ctor);
+			REL::Relocation<func_t> func{ RELOCATION_ID(15916, 41558) };
+			TESActionData*          tesActionData = func(this);
+			stl::emplace_vtable<TESActionData>(tesActionData);
+			return tesActionData;
+		}
 	};
 	static_assert(sizeof(TESActionData) == 0x60);
 }

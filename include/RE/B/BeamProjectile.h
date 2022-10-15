@@ -34,20 +34,41 @@ namespace RE
 		void FinishLoadGame(BGSLoadFormBuffer* a_buf) override;  // 11
 		void Revert(BGSLoadFormBuffer* a_buf) override;          // 12
 #ifndef SKYRIM_CROSS_VR
-		void Unk_A5(void) override;               // A5
-		void Unk_A9(void) override;               // A9
+		bool IsBeamProjectile() override;               // A5
+		void Process3D() override;               // A9
 		void UpdateImpl(float a_delta) override;  // AB
-		void Unk_B8(void) override;               // B8
-		void Unk_BD(void) override;               // BD
+		bool GetKillOnCollision() override;               // B8
+		void AddImpact(TESObjectREFR* a_ref, const NiPoint3& a_targetLoc, const NiPoint3& a_velocity, hkpCollidable* a_collidable, std::int32_t a_arg6, std::uint32_t a_arg7) override;               // BD
 		void Handle3DLoaded() override;           // C0
-		void Unk_C1(void) override;               // C1
+		bool ShouldUseDesiredTarget() override;               // C1
 #endif
 
 		// override (BSTEventSink<BSProceduralGeomEvent>)
 		BSEventNotifyControl ProcessEvent(const BSProceduralGeomEvent* a_event, BSTEventSource<BSProceduralGeomEvent>* a_eventSource) override;  // 01
 
+		struct BEAM_RUNTIME_DATA
+		{
+#define BEAM_RUNTIME_DATA_CONTENT \
+			std::uint64_t unk238;  // 238, 240
+		};
+
+		[[nodiscard]] inline BEAM_RUNTIME_DATA& GetBeamRuntimeData() noexcept
+		{
+			return REL::RelocateMemberIfNewer<BEAM_RUNTIME_DATA>(SKSE::RUNTIME_SSE_1_6_629, this, 0x98, 0xA0);
+		}
+
+		[[nodiscard]] inline const BEAM_RUNTIME_DATA& GetBeamRuntimeData() const noexcept
+		{
+			return REL::RelocateMemberIfNewer<BEAM_RUNTIME_DATA>(SKSE::RUNTIME_SSE_1_6_629, this, 0x98, 0xA0);
+		}
+
 		// members
-		std::uint64_t unk238;  // 238
+#ifndef ENABLE_SKYRIM_AE
+		BEAM_RUNTIME_DATA_CONTENT
+#endif
 	};
+#ifndef ENABLE_SKYRIM_AE
 	static_assert(sizeof(BeamProjectile) == 0x240);
+#endif
 }
+#undef BEAM_RUNTIME_DATA_CONTENT

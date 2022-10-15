@@ -48,4 +48,15 @@ namespace RE
 		BSTArray<void*> unk28;  // 28 - array of smart ptrs to bhkConstraints
 	};
 	static_assert(sizeof(bhkRigidBody) == 0x40);
+
+	class bhkRigidBodyT : bhkRigidBody
+	{
+	public:
+		inline static constexpr auto RTTI = RTTI_bhkRigidBodyT;
+		inline static constexpr auto Ni_RTTI = NiRTTI_bhkRigidBodyT;
+
+		hkQuaternion rotation;     // 40
+		hkVector4    translation;  // 50
+	};
+	static_assert(sizeof(bhkRigidBodyT) == 0x60);
 }

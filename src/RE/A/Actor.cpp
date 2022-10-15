@@ -87,9 +87,9 @@ namespace RE
 	void Actor::AllowBleedoutDialogue(bool a_canTalk)
 	{
 		if (a_canTalk) {
-			boolFlags.set(BOOL_FLAGS::kCanSpeakToEssentialDown);
+			GetActorRuntimeData().boolFlags.set(BOOL_FLAGS::kCanSpeakToEssentialDown);
 		} else {
-			boolFlags.reset(BOOL_FLAGS::kCanSpeakToEssentialDown);
+			GetActorRuntimeData().boolFlags.reset(BOOL_FLAGS::kCanSpeakToEssentialDown);
 		}
 	}
 
@@ -124,6 +124,13 @@ namespace RE
 		return func(this, a_pos, a_new_pos, a_speed, a_distance);
 	}
 
+	bool Actor::CanNavigateToPosition(const NiPoint3& a_pos, const NiPoint3& a_new_pos, float a_speed, float a_distance) const
+	{
+		using func_t = decltype(&Actor::CanNavigateToPosition);
+		REL::Relocation<func_t> func{ RELOCATION_ID(46050, 47314) };
+		return func(this, a_pos, a_new_pos, a_speed, a_distance);
+	}
+
 	bool Actor::CanOfferServices() const
 	{
 		const auto* vendorFac = GetVendorFaction();
@@ -132,11 +139,11 @@ namespace RE
 
 	bool Actor::CanPickpocket() const
 	{
-		if (!race) {
+		auto* _race = GetActorRuntimeData().race;
+		if (!_race) {
 			return false;
 		}
-
-		return race->AllowsPickpocket() && !IsPlayerTeammate();
+		return _race->AllowsPickpocket() && !IsPlayerTeammate();
 	}
 
 	bool Actor::CanTalkToPlayer() const
@@ -145,14 +152,16 @@ namespace RE
 		if (xTalk) {
 			return xTalk->talk;
 		} else {
-			return race != nullptr && race->AllowsPCDialogue();
+			auto* _race = GetActorRuntimeData().race;
+			return _race != nullptr && _race->AllowsPCDialogue();
 		}
 	}
 
 	void Actor::ClearArrested()
 	{
-		if (currentProcess && currentProcess->IsArrested()) {
-			currentProcess->SetArrested(false);
+		auto* _currentProcess = GetActorRuntimeData().currentProcess;
+		if (_currentProcess && _currentProcess->IsArrested()) {
+			_currentProcess->SetArrested(false);
 			EvaluatePackage(false, false);
 			auto procManager = ProcessLists::GetSingleton();
 			if (procManager) {
@@ -205,13 +214,20 @@ namespace RE
 	void Actor::EnableAI(bool a_enable)
 	{
 		if (a_enable) {
-			boolBits.set(BOOL_BITS::kProcessMe);
+			GetActorRuntimeData().boolBits.set(BOOL_BITS::kProcessMe);
 		} else {
-			boolBits.reset(BOOL_BITS::kProcessMe);
+			GetActorRuntimeData().boolBits.reset(BOOL_BITS::kProcessMe);
 			if (const auto controller = GetCharController()) {
 				controller->SetLinearVelocityImpl(0.0f);
 			}
 		}
+	}
+
+	void Actor::EndInterruptPackage(bool a_skipDialogue)
+	{
+		using func_t = decltype(&Actor::EndInterruptPackage);
+		REL::Relocation<func_t> func{ RELOCATION_ID(36475, 37474) };
+		return func(this, a_skipDialogue);
 	}
 
 	void Actor::EvaluatePackage(bool a_immediate, bool a_resetAI)
@@ -247,24 +263,26 @@ namespace RE
 
 	InventoryEntryData* Actor::GetAttackingWeapon()
 	{
-		if (!currentProcess || !currentProcess->high || !currentProcess->high->attackData || !currentProcess->middleHigh) {
+		auto* _currentProcess = GetActorRuntimeData().currentProcess;
+		if (!_currentProcess || !_currentProcess->high || !_currentProcess->high->attackData || !_currentProcess->middleHigh) {
 			return nullptr;
 		}
 
-		auto attackData = currentProcess->high->attackData;
-		auto proc = currentProcess->middleHigh;
+		auto attackData = _currentProcess->high->attackData;
+		auto proc = _currentProcess->middleHigh;
 
 		return attackData->IsLeftAttack() ? proc->leftHand : proc->rightHand;
 	}
 
 	const InventoryEntryData* Actor::GetAttackingWeapon() const
 	{
-		if (!currentProcess || !currentProcess->high || !currentProcess->high->attackData || !currentProcess->middleHigh) {
+		auto* _currentProcess = GetActorRuntimeData().currentProcess;
+		if (!_currentProcess || !_currentProcess->high || !_currentProcess->high->attackData || !_currentProcess->middleHigh) {
 			return nullptr;
 		}
 
-		auto attackData = currentProcess->high->attackData;
-		auto proc = currentProcess->middleHigh;
+		auto attackData = _currentProcess->high->attackData;
+		auto proc = _currentProcess->middleHigh;
 
 		return attackData->IsLeftAttack() ? proc->leftHand : proc->rightHand;
 	}
@@ -278,7 +296,8 @@ namespace RE
 
 	bhkCharacterController* Actor::GetCharController() const
 	{
-		return currentProcess ? currentProcess->GetCharController() : nullptr;
+		auto* _currentProcess = GetActorRuntimeData().currentProcess;
+		return _currentProcess ? _currentProcess->GetCharController() : nullptr;
 	}
 
 	uint32_t Actor::GetCollisionFilterInfo(uint32_t& a_outCollisionFilterInfo)
@@ -290,7 +309,8 @@ namespace RE
 
 	NiPointer<Actor> Actor::GetCommandingActor() const
 	{
-		return currentProcess ? currentProcess->GetCommandingActor().get() : NiPointer<Actor>{};
+		auto* _currentProcess = GetActorRuntimeData().currentProcess;
+		return _currentProcess ? _currentProcess->GetCommandingActor().get() : NiPointer<Actor>{};
 	}
 
 	TESFaction* Actor::GetCrimeFaction()
@@ -303,23 +323,43 @@ namespace RE
 		return GetCrimeFactionImpl();
 	}
 
+	TESPackage* Actor::GetCurrentPackage()
+	{
+		auto* _currentProcess = GetActorRuntimeData().currentProcess;
+		if (_currentProcess) {
+			return _currentProcess->GetRunningPackage();
+		}
+		return nullptr;
+	}
+
+	const TESPackage* Actor::GetCurrentPackage() const
+	{
+		auto* _currentProcess = GetActorRuntimeData().currentProcess;
+		if (_currentProcess) {
+			return _currentProcess->GetRunningPackage();
+		}
+		return nullptr;
+	}
+
 	InventoryEntryData* Actor::GetEquippedEntryData(bool a_leftHand) const
 	{
-		if (!currentProcess || !currentProcess->middleHigh) {
+		auto* _currentProcess = GetActorRuntimeData().currentProcess;
+		if (!_currentProcess || !_currentProcess->middleHigh) {
 			return nullptr;
 		}
 
-		auto proc = currentProcess->middleHigh;
+		auto proc = _currentProcess->middleHigh;
 		return a_leftHand ? proc->leftHand : proc->rightHand;
 	}
 
 	TESForm* Actor::GetEquippedObject(bool a_leftHand) const
 	{
-		if (currentProcess) {
+		auto* _currentProcess = GetActorRuntimeData().currentProcess;
+		if (_currentProcess) {
 			if (a_leftHand) {
-				return currentProcess->GetEquippedLeftHand();
+				return _currentProcess->GetEquippedLeftHand();
 			} else {
-				return currentProcess->GetEquippedRightHand();
+				return _currentProcess->GetEquippedRightHand();
 			}
 		} else {
 			return nullptr;
@@ -362,13 +402,14 @@ namespace RE
 		const auto diff = max.z - min.z;
 		const auto height = GetBaseHeight() * diff;
 
-		if (!currentProcess || !currentProcess->InHighProcess()) {
+		auto* _currentProcess = GetActorRuntimeData().currentProcess;
+		if (!_currentProcess || !_currentProcess->InHighProcess()) {
 			return height;
 		}
 
-		const auto cachedHeight = currentProcess->GetCachedHeight();
+		const auto cachedHeight = _currentProcess->GetCachedHeight();
 		if (cachedHeight == 0.0) {
-			currentProcess->SetCachedHeight(height);
+			_currentProcess->SetCachedHeight(height);
 			return height;
 		} else {
 			return cachedHeight;
@@ -381,7 +422,7 @@ namespace RE
 			return nullptr;
 		}
 
-		return myKiller.get().get();
+		return GetActorRuntimeData().myKiller.get().get();
 	}
 
 	std::uint16_t Actor::GetLevel() const
@@ -407,8 +448,9 @@ namespace RE
 
 	ObjectRefHandle Actor::GetOccupiedFurniture() const
 	{
-		if (currentProcess) {
-			return currentProcess->GetOccupiedFurniture();
+		auto* _currentProcess = GetActorRuntimeData().currentProcess;
+		if (_currentProcess) {
+			return _currentProcess->GetOccupiedFurniture();
 		} else {
 			return {};
 		}
@@ -416,8 +458,20 @@ namespace RE
 
 	TESRace* Actor::GetRace() const
 	{
+		auto* _race = GetActorRuntimeData().race;
+		if (_race) {
+			return _race;
+		}
+
 		auto base = GetActorBase();
 		return base ? base->race : nullptr;
+	}
+
+	const float Actor::GetReach() const
+	{
+		using func_t = decltype(&Actor::GetReach);
+		REL::Relocation<func_t> func{ RELOCATION_ID(37588, 38538) };
+		return func(this);
 	}
 
 	bool Actor::GetRider(NiPointer<Actor>& a_outRider)
@@ -454,18 +508,20 @@ namespace RE
 
 	TESFaction* Actor::GetVendorFaction()
 	{
-		if (!vendorFaction) {
+		auto* _vendorFaction = GetActorRuntimeData().vendorFaction;
+		if (!_vendorFaction) {
 			CalculateCurrentVendorFaction();
 		}
-		return vendorFaction;
+		return _vendorFaction;
 	}
 
 	const TESFaction* Actor::GetVendorFaction() const
 	{
-		if (!vendorFaction) {
+		auto* _vendorFaction = GetActorRuntimeData().vendorFaction;
+		if (!_vendorFaction) {
 			CalculateCurrentVendorFaction();
 		}
-		return vendorFaction;
+		return _vendorFaction;
 	}
 
 	TESObjectARMO* Actor::GetWornArmor(BGSBipedObjectForm::BipedObjectSlot a_slot)
@@ -539,12 +595,18 @@ namespace RE
 
 	bool Actor::IsAIEnabled() const
 	{
-		return boolBits.all(BOOL_BITS::kProcessMe);
+		return GetActorRuntimeData().boolBits.all(BOOL_BITS::kProcessMe);
+	}
+
+	bool Actor::IsAlarmed() const
+	{
+		auto currentPackage = GetCurrentPackage();
+		return currentPackage && currentPackage->packData.packType.get() == PACKAGE_PROCEDURE_TYPE::kAlarm;
 	}
 
 	bool Actor::IsAMount() const
 	{
-		return boolFlags.all(BOOL_FLAGS::kIsAMount);
+		return GetActorRuntimeData().boolFlags.all(BOOL_FLAGS::kIsAMount);
 	}
 
 	bool Actor::IsAnimationDriven() const
@@ -574,12 +636,12 @@ namespace RE
 
 	bool Actor::IsCommandedActor() const
 	{
-		return boolFlags.all(BOOL_FLAGS::kIsCommandedActor);
+		return GetActorRuntimeData().boolFlags.all(BOOL_FLAGS::kIsCommandedActor);
 	}
 
 	bool Actor::IsEssential() const
 	{
-		return boolFlags.all(BOOL_FLAGS::kEssential);
+		return GetActorRuntimeData().boolFlags.all(BOOL_FLAGS::kEssential);
 	}
 
 	bool Actor::IsFactionInCrimeGroup(const TESFaction* a_faction) const
@@ -605,7 +667,7 @@ namespace RE
 
 	bool Actor::IsGuard() const
 	{
-		return boolBits.all(BOOL_BITS::kGuard);
+		return GetActorRuntimeData().boolBits.all(BOOL_BITS::kGuard);
 	}
 
 	bool Actor::IsHostileToActor(Actor* a_actor)
@@ -650,7 +712,7 @@ namespace RE
 
 	bool Actor::IsPlayerTeammate() const
 	{
-		return boolBits.all(BOOL_BITS::kPlayerTeammate);
+		return GetActorRuntimeData().boolBits.all(BOOL_BITS::kPlayerTeammate);
 	}
 
 	float Actor::IsPointDeepUnderWater(float a_zPos, TESObjectCELL* a_cell)
@@ -666,6 +728,11 @@ namespace RE
 		}
 
 		return std::fminf((waterHeight - a_zPos) / GetHeight(), 1.0f);
+	}
+
+	bool Actor::IsProtected() const
+	{
+		return GetActorRuntimeData().boolFlags.all(BOOL_FLAGS::kProtected);
 	}
 
 	bool Actor::IsRunning() const
@@ -699,12 +766,13 @@ namespace RE
 
 	bool Actor::IsSummoned() const noexcept
 	{
-		return currentProcess && currentProcess->GetIsSummonedCreature();
+		auto* _currentProcess = GetActorRuntimeData().currentProcess;
+		return _currentProcess && _currentProcess->GetIsSummonedCreature();
 	}
 
 	bool Actor::IsTrespassing() const
 	{
-		return boolFlags.all(BOOL_FLAGS::kIsTrespassing);
+		return GetActorRuntimeData().boolFlags.all(BOOL_FLAGS::kIsTrespassing);
 	}
 
 	void Actor::KillImmediate()
@@ -712,6 +780,13 @@ namespace RE
 		using func_t = decltype(&Actor::KillImmediate);
 		REL::Relocation<func_t> func{ RELOCATION_ID(36723, 37735) };
 		return func(this);
+	}
+
+	std::int32_t Actor::RequestLOS(Actor* a_target, float a_viewCone)
+	{
+		using func_t = decltype(&Actor::RequestLOS);
+		REL::Relocation<func_t> func{ RELOCATION_ID(36752, 37768) };
+		return func(this, a_target, a_viewCone);
 	}
 
 	void Actor::RemoveAnimationGraphEventSink(BSTEventSink<BSAnimationGraphEvent>* a_sink) const
@@ -783,6 +858,16 @@ namespace RE
 		return func(this, a_ref, a_object, a_num, a_total, a_owner, a_allowWarning);
 	}
 
+	void Actor::StopAlarmOnActor()
+	{
+		EndInterruptPackage(false);
+
+		auto* _currentProcess = GetActorRuntimeData().currentProcess;
+		if (_currentProcess) {
+			_currentProcess->ClearActionHeadtrackTarget(true);
+		}
+	}
+
 	void Actor::StopInteractingQuick(bool a_unk02)
 	{
 		using func_t = decltype(&Actor::StopInteractingQuick);
@@ -804,6 +889,13 @@ namespace RE
 		return func(this, a_race, a_player);
 	}
 
+	void Actor::TrespassAlarm(TESObjectREFR* a_ref, TESForm* a_ownership, std::int32_t a_crime)
+	{
+		using func_t = decltype(&Actor::TrespassAlarm);
+		REL::Relocation<func_t> func{ RELOCATION_ID(36432, 37427) };
+		return func(this, a_ref, a_ownership, a_crime);
+	}
+
 	void Actor::UpdateArmorAbility(TESForm* a_armor, ExtraDataList* a_extraData)
 	{
 		using func_t = decltype(&Actor::UpdateArmorAbility);
@@ -813,8 +905,9 @@ namespace RE
 
 	void Actor::Update3DModel()
 	{
-		if (currentProcess) {
-			currentProcess->Update3DModel(this);
+		auto* _currentProcess = GetActorRuntimeData().currentProcess;
+		if (_currentProcess) {
+			_currentProcess->Update3DModel(this);
 		}
 	}
 

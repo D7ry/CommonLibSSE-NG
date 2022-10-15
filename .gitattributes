@@ -2,3 +2,4 @@
 * text=auto
 
 *.as linguist-language=ActionScript
+\!Update.ps1 linguist-vendored
