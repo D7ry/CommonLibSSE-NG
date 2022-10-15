@@ -69,7 +69,7 @@ namespace RE
 		}
 		return false;
 	}
-
+	
 	bool Actor::AddSpell(SpellItem* a_spell)
 	{
 		using func_t = decltype(&Actor::AddSpell);
@@ -115,6 +115,13 @@ namespace RE
 	{
 		const auto* worldSpace = GetWorldspace();
 		return worldSpace && worldSpace->HasMaxHeightData();
+	}
+	
+	bool Actor::UpdateNavPos(const NiPoint3& a_pos, const NiPoint3& a_new_pos, float a_speed, float a_distance) const
+	{
+		using func_t = decltype(&Actor::UpdateNavPos);
+		REL::Relocation<func_t> func{ RELOCATION_ID(46050, 47314) };
+		return func(this, a_pos, a_new_pos, a_speed, a_distance);
 	}
 
 	bool Actor::CanOfferServices() const
@@ -260,6 +267,13 @@ namespace RE
 		auto proc = currentProcess->middleHigh;
 
 		return attackData->IsLeftAttack() ? proc->leftHand : proc->rightHand;
+	}
+
+	const float Actor::GetBoundRadius() const
+	{
+		using func_t = decltype(&Actor::GetBoundRadius);
+		REL::Relocation<func_t> func{ RELOCATION_ID(36444, 37439) };
+		return func(this);
 	}
 
 	bhkCharacterController* Actor::GetCharController() const

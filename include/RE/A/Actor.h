@@ -482,6 +482,7 @@ namespace RE
 		[[nodiscard]] bool                      CanAttackActor(Actor* a_actor);
 		[[nodiscard]] bool                      CanFlyHere() const;
 		[[nodiscard]] bool                      CanOfferServices() const;
+		[[nodiscard]] bool                      UpdateNavPos(const NiPoint3& a_pos, const NiPoint3& a_new_pos, float a_speed = 2.0f, float a_distance = 64.0f) const;
 		[[nodiscard]] bool                      CanPickpocket() const;
 		[[nodiscard]] bool                      CanTalkToPlayer() const;
 		void                                    ClearArrested();
@@ -500,6 +501,7 @@ namespace RE
 		[[nodiscard]] float                     GetActorValueModifier(ACTOR_VALUE_MODIFIER a_modifier, ActorValue a_value) const;
 		[[nodiscard]] InventoryEntryData*       GetAttackingWeapon();
 		[[nodiscard]] const InventoryEntryData* GetAttackingWeapon() const;
+		[[nodiscard]] const float               GetBoundRadius() const;
 		[[nodiscard]] bhkCharacterController*   GetCharController() const;
 		[[nodiscard]] uint32_t                  GetCollisionFilterInfo(uint32_t& a_outCollisionFilterInfo);
 		[[nodiscard]] NiPointer<Actor>          GetCommandingActor() const;
