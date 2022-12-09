@@ -268,21 +268,19 @@ namespace RE
 	{
 		return ObjectRefHandle(this);
 	}
-
-	float TESObjectREFR::GetHeadingAngle(const NiPoint3& a_pos, bool a_abs)
+	
+	inline bool GetHeadingAngleRE(RE::TESObjectREFR* a_object, RE::TESObjectREFR* a_target, bool a_unk_flag, double& a_result)
 	{
-		float theta = NiFastATan2(a_pos.x - GetPositionX(), a_pos.y - GetPositionY());
-		float heading = rad_to_deg(theta - GetAngleZ());
-
-		if (heading < -180.0f) {
-			heading += 360.0f;
-		}
-
-		if (heading > 180.0f) {
-			heading -= 360.0f;
-		}
-
-		return a_abs ? NiAbs(heading) : heading;
+		using func_t = decltype(&GetHeadingAngleRE);
+		REL::Relocation<func_t> func{ RELOCATION_ID(21050, 21500) };
+		return func(a_object, a_target, a_unk_flag, a_result);
+	}
+	
+	double TESObjectREFR::GetHeadingAngle(RE::TESObjectREFR* a_target)
+	{
+		double angle = 0;
+		GetHeadingAngleRE(this, a_target, false, angle);
+		return angle;
 	}
 
 	float TESObjectREFR::GetHeight() const

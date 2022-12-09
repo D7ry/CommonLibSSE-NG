@@ -387,7 +387,7 @@ namespace RE
 		[[nodiscard]] std::optional<double>             GetEnchantmentCharge() const;
 		[[nodiscard]] TESFaction*                       GetFactionOwner();
 		[[nodiscard]] ObjectRefHandle                   GetHandle();
-		[[nodiscard]] float                             GetHeadingAngle(const RE::NiPoint3& a_pos, bool a_abs);
+		[[nodiscard]] double                            GetHeadingAngle(RE::TESObjectREFR* a_target);
 		[[nodiscard]] float                             GetHeight() const;
 		[[nodiscard]] InventoryItemMap                  GetInventory();
 		[[nodiscard]] InventoryItemMap                  GetInventory(std::function<bool(TESBoundObject&)> a_filter);
