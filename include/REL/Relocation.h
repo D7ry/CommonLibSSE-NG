@@ -751,12 +751,12 @@ namespace REL {
 
             return true;
         }
+#endif
 
         static void reset() {
             _initialized = false;
             _instance.clear();
         }
-#endif
 
         [[nodiscard]] std::uintptr_t base() const noexcept { return _base; }
 
@@ -1048,12 +1048,12 @@ namespace REL {
                     return false;
             }
         }
+#endif
 
         static void reset() {
             _instance.clear();
             _initialized = false;
         }
-#endif
 
         [[nodiscard]] inline std::size_t id2offset(std::uint64_t a_id) const {
             mapping_t elem{a_id, 0};
@@ -2152,6 +2152,13 @@ namespace REL {
 	template<class T, class This>
 	[[nodiscard]] inline T &RelocateMemberIfNewer(Version v, This *a_self, std::ptrdiff_t older, std::ptrdiff_t newer) {
 		return *reinterpret_cast<T *>(reinterpret_cast<uintptr_t>(a_self) +
+									 (REL::Module::get().version().compare(v) == std::strong_ordering::less ? older : newer));
+	}
+
+	template <class T, class This>
+	[[nodiscard]] inline T& RelocateParentIfNewer(Version v, This* a_self, std::ptrdiff_t older, std::ptrdiff_t newer)
+	{
+		return *reinterpret_cast<T*>(reinterpret_cast<uintptr_t>(a_self) -
 									 (REL::Module::get().version().compare(v) == std::strong_ordering::less ? older : newer));
 	}
 }
