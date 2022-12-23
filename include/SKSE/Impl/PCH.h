@@ -792,6 +792,18 @@ namespace REL
 
 #define RELOCATION_ID(a_se, a_ae) REL::RelocationID(a_se, a_ae)
 
+#define SKSE_ADDTASK(...)                 \
+{                                         \
+	auto task = SKSE::GetTaskInterface(); \
+	if (task) {                           \
+		task->AddTask(__VA_ARGS__);       \
+	}                                     \
+}
+
+#define INFO(msg) logger::info(msg);
+#define DEBUG(msg) logger::debug(msg);
+	
+
 #include "REL/Relocation.h"
 
 #include "RE/Offsets.h"
