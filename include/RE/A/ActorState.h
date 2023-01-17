@@ -158,6 +158,7 @@ namespace RE
 		[[nodiscard]] ACTOR_LIFE_STATE  GetLifeState() const noexcept { return actorState1.lifeState; }
 		[[nodiscard]] SIT_SLEEP_STATE   GetSitSleepState() const noexcept { return actorState1.sitSleepState; }
 		[[nodiscard]] WEAPON_STATE      GetWeaponState() const noexcept { return actorState2.weaponState; }
+		[[nodiscard]] bool              IsStaggered() const noexcept { return static_cast<bool>(actorState2.staggered); }
 
 		[[nodiscard]] bool IsBleedingOut() const noexcept
 		{

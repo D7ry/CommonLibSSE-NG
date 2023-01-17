@@ -800,9 +800,18 @@ namespace REL
 	}                                     \
 }
 
-#define INFO(msg) logger::info(msg);
-#define DEBUG(msg) logger::debug(msg);
-	
+#define INFO(...) logger::info(__VA_ARGS__)
+#define ERROR(...) logger::critical(__VA_ARGS__)
+#define DEBUG(...) logger::debug(__VA_ARGS__)
+#define WRITELOCK std::unique_lock<std::shared_mutex>
+#define READLOCK std::shared_lock<std::shared_mutex>
+#define ASSERT(CONDITION)                                     \
+	if (CONDITION) {                                          \
+	} else {                                                  \
+		logger::critical("assertion {} failed.", #CONDITION); \
+	}
+
+
 
 #include "REL/Relocation.h"
 

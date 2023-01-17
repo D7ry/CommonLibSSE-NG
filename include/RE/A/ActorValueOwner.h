@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RE/A/ActorValues.h"
+#include "SKSE/Version.h"
 
 namespace RE
 {

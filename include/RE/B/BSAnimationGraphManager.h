@@ -119,8 +119,12 @@ namespace RE
 		BSTArray<BSTSmartPointer<BSAnimationGraphChannel>>  boundChannels;         // 10
 		BSTArray<BSTSmartPointer<BSAnimationGraphChannel>>  bumpedChannels;        // 28
 		BSTSmallArray<BSTSmartPointer<BShkbAnimationGraph>> graphs;                // 40
-		BSTArray<BSAnimationGraphManagerPtr> subManagers;                          // 58
-		BSAnimationGraphVariableCache        variableCache;                        // 70
+		BSTArray<BSAnimationGraphManagerPtr>                subManagers;           // 58
+		BSAnimationGraphVariableCache                       variableCache;         // 70
+		mutable BSSpinLock                                  updateLock;            // 98
+		mutable BSSpinLock                                  dependentManagerLock;  // A0
+		std::uint32_t                                       activeGraph;           // A8
+		std::uint32_t                                       generateDepth;         // A8
 
 #ifndef ENABLE_SKYRIM_AE
 		RUNTIME_DATA_CONTENT
