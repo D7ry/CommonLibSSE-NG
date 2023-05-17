@@ -541,6 +541,8 @@ namespace RE
 		[[nodiscard]] bool                      HasLineOfSight(TESObjectREFR* a_ref, bool& a_arg2);
 		[[nodiscard]] bool                      HasPerk(BGSPerk* a_perk) const;
 		[[nodiscard]] bool                      HasSpell(SpellItem* a_spell) const;
+		[[nodiscard]] bool                      HasShout(TESShout* a_shout) const;
+		[[nodiscard]] bool                      IsWeaponEquipped(TESObjectWEAP* a_weapon) const;
 		void                                    InterruptCast(bool a_restoreMagicka) const;
         [[nodiscard]] bool                      IsAttacking() const;
 		[[nodiscard]] bool                      IsAIEnabled() const;

@@ -579,6 +579,26 @@ namespace RE
 		return func(this, a_spell);
 	}
 
+	bool Actor::HasShout(TESShout* a_shout) const
+	{
+		using func_t = decltype(&Actor::HasShout);
+		REL::Relocation<func_t> func{ RELOCATION_ID(37829, 38783) };
+		return func(this, a_shout);
+	}
+
+	bool Actor::IsWeaponEquipped(RE::TESObjectWEAP* a_weapon) const
+	{
+		auto lhs = this->GetEquippedEntryData(true);
+		if (lhs && lhs->GetObject() && lhs->GetObject()->GetFormID() == a_weapon->GetFormID()) {
+			return true;
+		}
+		auto rhs = this->GetEquippedEntryData(false);
+		if (rhs && rhs->GetObject() && rhs->GetObject() == a_weapon) {
+			return true;
+		}
+		return false;
+	}
+
 	void Actor::InterruptCast(bool a_restoreMagicka) const
 	{
 		using func_t = decltype(&Actor::InterruptCast);

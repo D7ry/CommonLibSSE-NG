@@ -1,7 +1,7 @@
 #include "RE/P/PlayerCharacter.h"
 
 #include "RE/T/TESObjectREFR.h"
-
+#include "RE/I/InventoryEntryData.h"
 using namespace REL;
 
 namespace RE
@@ -146,6 +146,19 @@ namespace RE
 		} else {
 			return static_cast<bool>(REL::RelocateMember<ObjectRefHandle>(this, 0x8C8, 0));
 		}
+	}
+	bool PlayerCharacter::IsArmorEquipped(TESBoundObject* a_armor) const
+	{
+		auto ptr = this->GetSingleton();
+		if (!ptr) {
+			return false;
+		}
+		auto inv = ptr->GetInventory();
+		if (!inv.contains(a_armor)) {
+			return false;
+		}
+		auto entry = inv.find(a_armor)->second.second.get();
+		return entry && entry->IsWorn();
 	}
 
 	void PlayerCharacter::PlayPickupEvent(TESForm* a_item, TESForm* a_containerOwner, TESObjectREFR* a_containerRef, EventType a_eventType)
