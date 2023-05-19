@@ -161,6 +161,7 @@ namespace RE
 		return entry && entry->IsWorn();
 	}
 
+
 	void PlayerCharacter::PlayPickupEvent(TESForm* a_item, TESForm* a_containerOwner, TESObjectREFR* a_containerRef, EventType a_eventType)
 	{
 		using func_t = decltype(&PlayerCharacter::PlayPickupEvent);

@@ -36,8 +36,8 @@ namespace RE
 		void                                          AddExtraList(ExtraDataList* a_extra);
 		[[nodiscard]] const char*                     GetDisplayName();
 		[[nodiscard]] std::optional<double>           GetEnchantmentCharge() const;
-		[[nodiscard]] constexpr TESBoundObject*       GetObject() noexcept { return object; }
-		[[nodiscard]] constexpr const TESBoundObject* GetObject() const noexcept { return object; }
+		[[nodiscard]] constexpr TESBoundObject*       GetObject__() noexcept { return object; }
+		[[nodiscard]] constexpr const TESBoundObject* GetObject__() const noexcept { return object; }
 		[[nodiscard]] TESForm*                        GetOwner();
 		[[nodiscard]] SOUL_LEVEL                      GetSoulLevel() const;
 

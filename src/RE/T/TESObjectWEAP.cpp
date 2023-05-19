@@ -124,4 +124,14 @@ namespace RE
 	{
 		return weaponData.animationType == WEAPON_TYPE::kCrossbow;
 	}
+
+	bool TESObjectWEAP::IsOneHanded() const
+	{
+		return !IsTwoHandedAxe() && !IsTwoHandedSword();
+	}
+
+	bool TESObjectWEAP::IsTwoHanded() const
+	{
+		return IsTwoHandedAxe() || IsTwoHandedSword();
+	}
 }

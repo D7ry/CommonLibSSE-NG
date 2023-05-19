@@ -11,6 +11,18 @@ namespace RE
 			return *value;
 		}
 
+		void SetTargetGlobalTimeMult(float a_timeMult, bool a_setCurrentImmediately)
+		{
+			using func_t = decltype(&BSTimer::SetTargetGlobalTimeMult);
+			REL::Relocation<func_t> func{ RELOCATION_ID(66988, 68245) };
+			func(this, a_timeMult, a_setCurrentImmediately);
+		}
+
+		static BSTimer* GetSingleton()
+		{
+			
+		}
+
 		// members
 		std::uint64_t unk00;                          // 00
 		std::uint32_t lastPerformanceCount;           // 08

@@ -132,6 +132,13 @@ namespace RE
 		using iterator = iterator_base<BSExtraData>;
 		using const_iterator = iterator_base<const BSExtraData>;
 
+		inline static ExtraDataList* InitExtraDataList(ExtraDataList* a_list)
+		{
+			using func_t = ExtraDataList* (*)();
+			REL::Relocation<func_t> func{ RELOCATION_ID(11437, 11583) };
+			return func();
+		}
+		
 		ExtraDataList();
 		~ExtraDataList();
 

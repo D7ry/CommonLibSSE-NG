@@ -254,6 +254,8 @@ namespace RE
 			};
 		};
 
+		
+
 		~Actor() override;  // 000
 
 		// override (TESObjectREFR)
@@ -542,7 +544,6 @@ namespace RE
 		[[nodiscard]] bool                      HasPerk(BGSPerk* a_perk) const;
 		[[nodiscard]] bool                      HasSpell(SpellItem* a_spell) const;
 		[[nodiscard]] bool                      HasShout(TESShout* a_shout) const;
-		[[nodiscard]] bool                      IsWeaponEquipped(TESObjectWEAP* a_weapon) const;
 		void                                    InterruptCast(bool a_restoreMagicka) const;
         [[nodiscard]] bool                      IsAttacking() const;
 		[[nodiscard]] bool                      IsAIEnabled() const;

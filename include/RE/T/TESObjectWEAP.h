@@ -245,7 +245,8 @@ namespace RE
 		[[nodiscard]] bool          IsBow() const;
 		[[nodiscard]] bool          IsStaff() const;
 		[[nodiscard]] bool          IsCrossbow() const;
-
+		[[nodiscard]] bool          IsOneHanded() const;
+		[[nodiscard]] bool          IsTwoHanded() const;
 		// members
 		Data                                         weaponData;              // 168 - DNAM
 		CriticalData                                 criticalData;            // 1A0 - CRDT

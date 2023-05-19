@@ -586,18 +586,7 @@ namespace RE
 		return func(this, a_shout);
 	}
 
-	bool Actor::IsWeaponEquipped(RE::TESObjectWEAP* a_weapon) const
-	{
-		auto lhs = this->GetEquippedEntryData(true);
-		if (lhs && lhs->GetObject() && lhs->GetObject()->GetFormID() == a_weapon->GetFormID()) {
-			return true;
-		}
-		auto rhs = this->GetEquippedEntryData(false);
-		if (rhs && rhs->GetObject() && rhs->GetObject() == a_weapon) {
-			return true;
-		}
-		return false;
-	}
+	
 
 	void Actor::InterruptCast(bool a_restoreMagicka) const
 	{

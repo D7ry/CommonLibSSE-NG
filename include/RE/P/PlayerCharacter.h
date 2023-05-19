@@ -486,6 +486,7 @@ namespace RE
 		[[nodiscard]] bool IsGrabbing() const;
 		[[nodiscard]] bool                     IsArmorEquipped(TESBoundObject* a_armor) const;
 
+
 		void               PlayPickupEvent(TESForm* a_item, TESForm* a_containerOwner, TESObjectREFR* a_containerRef, EventType a_eventType);
 		void                     SetAIDriven(bool a_enable);
 		void                     SetEscaping(bool a_flag, bool a_escaped);
