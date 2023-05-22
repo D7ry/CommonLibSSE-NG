@@ -54,7 +54,6 @@ namespace RE
 		[[nodiscard]] bool                            IsQuestObject() const;
 		void                                          PoisonObject(AlchemyItem* a_alchItem, std::uint32_t a_count);
 
-
 		TES_HEAP_REDEFINE_NEW();
 
 		// members

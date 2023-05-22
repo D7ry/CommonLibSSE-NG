@@ -553,7 +553,8 @@ namespace REL
 			}
 
 			template <std::size_t Index, char C, char... Rest>
-			requires(sizeof...(Rest) > 0) constexpr uint8_t read_version(std::array<typename REL::Version::value_type, 4>& result)
+				requires(sizeof...(Rest) > 0)
+			constexpr uint8_t read_version(std::array<typename REL::Version::value_type, 4>& result)
 			{
 				static_assert(C == '.' || (C >= '0' && C <= '9'), "Invalid character in semantic version literal.");
 				static_assert(Index < 4, "Too many components in semantic version literal.");
@@ -1039,10 +1040,10 @@ namespace REL
 			{
 				const mapping_t elem{ 0, a_offset };
 				const auto      it = std::lower_bound(
-						 _offset2id.begin(),
-						 _offset2id.end(),
-						 elem,
-						 [](auto&& a_lhs, auto&& a_rhs) {
+                    _offset2id.begin(),
+                    _offset2id.end(),
+                    elem,
+                    [](auto&& a_lhs, auto&& a_rhs) {
                         return a_lhs.offset < a_rhs.offset;
                     });
 				if (it == _offset2id.end()) {
@@ -1969,10 +1970,12 @@ namespace REL
 
 			template <char C1, char C2>
 			Hexadecimal<C1, C2>
-				rule_for() noexcept requires(characters::hexadecimal(C1) && characters::hexadecimal(C2));
+				rule_for() noexcept
+				requires(characters::hexadecimal(C1) && characters::hexadecimal(C2));
 
 			template <char C1, char C2>
-			Wildcard rule_for() noexcept requires(characters::wildcard(C1) && characters::wildcard(C2));
+			Wildcard rule_for() noexcept
+				requires(characters::wildcard(C1) && characters::wildcard(C2));
 		}
 
 		template <class... Rules>
@@ -2215,10 +2218,10 @@ namespace REL
 												a_seAndAEVtableOffset) +
 			a_seAndAEVtableIndex
 #elif !defined(ENABLE_SKYRIM_AE) && !defined(ENABLE_SKYRIM_SE)
-												 a_vrVtableOffset) +
+												a_vrVtableOffset) +
 			a_vrVtableIndex
 #else
-												 (Module::IsVR() ? a_vrVtableOffset : a_seAndAEVtableOffset)) +
+												(Module::IsVR() ? a_vrVtableOffset : a_seAndAEVtableOffset)) +
 			(Module::IsVR() ? a_vrVtableIndex : a_seAndAEVtableIndex)
 #endif
 				* sizeof(uintptr_t)))(a_self, std::forward<Args>(a_args)...);

@@ -27,7 +27,8 @@ namespace RE
 	struct BSAnimationGraphVariableCache
 	{
 	public:
-		[[nodiscard]] BSSpinLock* GetGraphLock() const noexcept {
+		[[nodiscard]] BSSpinLock* GetGraphLock() const noexcept
+		{
 			if SKYRIM_REL_CONSTEXPR (REL::Module::IsAE()) {
 				if (REL::Module::get().version() >= SKSE::RUNTIME_SSE_1_6_629) {
 					return &REL::RelocateMember<BSSpinLock>(this, 0x20);
@@ -36,11 +37,13 @@ namespace RE
 			return nullptr;
 		}
 
-		[[nodiscard]] BSTSmartPointer<BShkbAnimationGraph>& GetAnimationGraph() noexcept {
+		[[nodiscard]] BSTSmartPointer<BShkbAnimationGraph>& GetAnimationGraph() noexcept
+		{
 			return REL::RelocateMemberIfNewer<BSTSmartPointer<BShkbAnimationGraph>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x20, 0x28);
 		}
 
-		[[nodiscard]] const BSTSmartPointer<BShkbAnimationGraph>& GetAnimationGraph() const noexcept {
+		[[nodiscard]] const BSTSmartPointer<BShkbAnimationGraph>& GetAnimationGraph() const noexcept
+		{
 			return REL::RelocateMemberIfNewer<BSTSmartPointer<BShkbAnimationGraph>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x20, 0x28);
 		}
 

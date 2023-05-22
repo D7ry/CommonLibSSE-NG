@@ -81,11 +81,11 @@ namespace RE
 
 	NiPointer<Actor> PlayerCharacter::GetActorDoingPlayerCommand() const
 	{
-        if SKYRIM_REL_CONSTEXPR (REL::Module::IsVR()) {
-            return REL::RelocateMember<ActorHandle>(this, 0, 0xE8C).get();
-        } else {
-            return REL::RelocateMemberIfNewer<ActorHandle>(SKSE::RUNTIME_SSE_1_6_629, this, 0x894, 0x89C).get();
-        }
+		if SKYRIM_REL_CONSTEXPR (REL::Module::IsVR()) {
+			return REL::RelocateMember<ActorHandle>(this, 0, 0xE8C).get();
+		} else {
+			return REL::RelocateMemberIfNewer<ActorHandle>(SKSE::RUNTIME_SSE_1_6_629, this, 0x894, 0x89C).get();
+		}
 	}
 
 	float PlayerCharacter::GetArmorValue(InventoryEntryData* a_form)
@@ -169,12 +169,11 @@ namespace RE
 
 	bool PlayerCharacter::HasActorDoingCommand() const
 	{
-        if SKYRIM_REL_VR_CONSTEXPR (REL::Module::IsVR()) {
-            return static_cast<bool>(REL::RelocateMember<ActorHandle>(this, 0, 0xE8C));
-        }
-        else {
-            return static_cast<bool>(REL::RelocateMemberIfNewer<ActorHandle>(SKSE::RUNTIME_SSE_1_6_629, this, 0x894, 0x89C));
-        }
+		if SKYRIM_REL_VR_CONSTEXPR (REL::Module::IsVR()) {
+			return static_cast<bool>(REL::RelocateMember<ActorHandle>(this, 0, 0xE8C));
+		} else {
+			return static_cast<bool>(REL::RelocateMemberIfNewer<ActorHandle>(SKSE::RUNTIME_SSE_1_6_629, this, 0x894, 0x89C));
+		}
 	}
 
 	bool PlayerCharacter::IsGrabbing() const

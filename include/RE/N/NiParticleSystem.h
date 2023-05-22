@@ -17,14 +17,14 @@ namespace RE
 		~NiParticleSystem() override;  // 00
 
 		// override (NiParticles)
-		const NiRTTI* GetRTTI() const override;                                                                                    // 02
-		NiObject*     CreateClone(NiCloningProcess& a_cloning) override;                                                           // 17
-		void          LoadBinary(NiStream& a_stream) override;                                                                     // 18
-		void          LinkObject(NiStream& a_stream) override;                                                                     // 19 - { BSGeometry::LinkObject(a_stream); }
-		bool          RegisterStreamables(NiStream& a_stream) override;                                                            // 1A - { return BSGeometry::RegisterStreamables(a_stream); }
-		void          SaveBinary(NiStream& a_stream) override;                                                                     // 1B
-		bool          IsEqual(NiObject* a_object) override;                                                                        // 1C - { return BSGeometry::IsEqual(); }
-		void          ProcessClone(NiCloningProcess& a_cloning) override;                                                          // 1D
+		const NiRTTI* GetRTTI() const override;                                                                           // 02
+		NiObject*     CreateClone(NiCloningProcess& a_cloning) override;                                                  // 17
+		void          LoadBinary(NiStream& a_stream) override;                                                            // 18
+		void          LinkObject(NiStream& a_stream) override;                                                            // 19 - { BSGeometry::LinkObject(a_stream); }
+		bool          RegisterStreamables(NiStream& a_stream) override;                                                   // 1A - { return BSGeometry::RegisterStreamables(a_stream); }
+		void          SaveBinary(NiStream& a_stream) override;                                                            // 1B
+		bool          IsEqual(NiObject* a_object) override;                                                               // 1C - { return BSGeometry::IsEqual(); }
+		void          ProcessClone(NiCloningProcess& a_cloning) override;                                                 // 1D
 		void          SetSelectiveUpdateFlags(bool& a_selectiveUpdate, bool a_selectiveUpdateTransforms, bool& a_rigid);  // 2B
 		void          UpdateDownwardPass(NiUpdateData& a_data, std::uint32_t a_arg2);                                     // 2C
 		void          UpdateSelectedDownwardPass(NiUpdateData& a_data, std::uint32_t a_arg2);                             // 2D

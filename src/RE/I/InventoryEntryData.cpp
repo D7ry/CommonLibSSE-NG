@@ -245,7 +245,7 @@ namespace RE
 
 		return false;
 	}
-	
+
 	bool InventoryEntryData::IsOwnedBy(Actor* a_testOwner, bool a_defaultTo)
 	{
 		return IsOwnedBy(a_testOwner, GetOwner(), a_defaultTo);

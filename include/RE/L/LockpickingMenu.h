@@ -61,7 +61,7 @@ namespace RE
 	float                 partialPickAngle;    /* B8 */ \
 	std::uint32_t         numBrokenPicks;      /* BC */ \
 	bool                  init3DElements;      /* C0 */ \
-    bool                  animating;           /* C1 */ \
+	bool                  animating;           /* C1 */ \
 	bool                  unk10A;              /* C2 */ \
 	bool                  menuCleared;         /* C3 */ \
 	bool                  animationFinished;   /* C4 */ \

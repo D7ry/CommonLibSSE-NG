@@ -21,17 +21,17 @@ namespace RE
 
 		struct RUNTIME_DATA
 		{
-#define RUNTIME_DATA_CONTENT                    \
-	GFxValue                 root;             /* 30 - "Menu_mc" */ \
-			BGSLocation*             currentLocation;  /* 48 */ \
-			bool                     unk50;            /* 50 */ \
-			bool                     unk51;            /* 51 */ \
-			std::uint16_t            pad52;            /* 52 */ \
-			std::uint32_t            pad54;            /* 54 */ \
-			BSTArray<TESLoadScreen*> loadScreens;      /* 58 */ \
-			std::uint32_t            unk70;            /* 70 */ \
-			std::uint32_t            pad74;            /* 74 */ \
-			std::uint64_t            unk78;            /* 78 */
+#define RUNTIME_DATA_CONTENT                                       \
+	GFxValue                 root;            /* 30 - "Menu_mc" */ \
+	BGSLocation*             currentLocation; /* 48 */             \
+	bool                     unk50;           /* 50 */             \
+	bool                     unk51;           /* 51 */             \
+	std::uint16_t            pad52;           /* 52 */             \
+	std::uint32_t            pad54;           /* 54 */             \
+	BSTArray<TESLoadScreen*> loadScreens;     /* 58 */             \
+	std::uint32_t            unk70;           /* 70 */             \
+	std::uint32_t            pad74;           /* 74 */             \
+	std::uint64_t            unk78;           /* 78 */
 
 			RUNTIME_DATA_CONTENT
 		};

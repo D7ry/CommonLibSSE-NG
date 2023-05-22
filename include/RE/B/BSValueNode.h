@@ -23,7 +23,7 @@ namespace RE
 		void          SaveBinary(NiStream& a_stream) override;            // 1B
 		bool          IsEqual(NiObject* a_object) override;               // 1C
 #ifndef SKYRIM_CROSS_VR
-		void UpdateWorldData(NiUpdateData* a_data) override;              // 30
+		void UpdateWorldData(NiUpdateData* a_data) override;  // 30
 #endif
 
 		// add
