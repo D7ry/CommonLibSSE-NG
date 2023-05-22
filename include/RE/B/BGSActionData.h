@@ -1,10 +1,13 @@
 #pragma once
 
 #include "RE/A/ActionInput.h"
+#include "RE/A/ActionOutput.h"
 
 namespace RE
 {
-	class BGSActionData : public ActionInput
+	class BGSActionData :
+		public ActionInput,  // 00
+		public ActionOutput  // 28
 	{
 	public:
 		inline static constexpr auto RTTI = RTTI_BGSActionData;

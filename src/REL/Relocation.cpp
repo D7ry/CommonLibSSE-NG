@@ -170,8 +170,8 @@ namespace REL
 		for (auto& segment : _segments) {
 			segment = {};
 		}
-		IDDatabase::_instance.clear();
-		IDDatabase::_initialized = false;
+        IDDatabase::_instance.clear();
+        IDDatabase::_initialized = false;
 	}
 
 	IDDatabase IDDatabase::_instance;

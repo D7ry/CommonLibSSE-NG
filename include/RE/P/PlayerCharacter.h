@@ -1,5 +1,6 @@
 #pragma once
 
+#include "RE/B/BGSDefaultObjectManager.h"
 #include "RE/B/BSPointerHandle.h"
 #include "RE/B/BSSoundHandle.h"
 #include "RE/B/BSTArray.h"
@@ -16,6 +17,8 @@
 #include "RE/N/NiSmartPointer.h"
 #include "RE/N/NiTMap.h"
 #include "RE/P/PositionPlayerEvent.h"
+#include "RE/T/TESObjectWEAP.h"
+#include "RE/T/TESQuest.h"
 
 namespace RE
 {
@@ -224,6 +227,7 @@ namespace RE
 	static_assert(sizeof(PlayerActionObject) == 0xC);
 
 	class PlayerCharacter :
+#ifndef ENABLE_SKYRIM_AE
 		public Character,                            // 000
 		public BSTEventSource<BGSActorCellEvent>,    // 2D0
 		public BSTEventSource<BGSActorDeathEvent>,   // 328
@@ -232,6 +236,9 @@ namespace RE
 		public BSTEventSink<MenuModeChangeEvent>,    // 2B8
 		public BSTEventSink<UserEventEnabledEvent>,  // 2C0
 		public BSTEventSink<TESTrackedStatsEvent>    // 2C8
+#else
+		public Character // 000
+#endif
 	{
 	public:
 		inline static constexpr auto RTTI = RTTI_PlayerCharacter;
@@ -258,49 +265,111 @@ namespace RE
 			kHandsBound = 1 << 2
 		};
 
-		enum class FlagBD9
+		struct PlayerFlags
 		{
-			kNone = 0,
-			kIsSleeping = 1 << 2,
-			kGreetingPlayer = 1 << 6
+			// members
+			bool          travelUseDoor: 1;                  // 0:0 - Guess from FO4 given matching logic for Character::WarpFollowers
+			bool          fastTraveling: 1;                  // 0:1 - Set and cleared in the same fast travel function
+			bool          overAutoAimTarget: 1;              // 0:2 - Crosshair over hostile actor AND equipped WEAPON_TYPE bow, staff, or crossbow, must have weapon out to be accurate
+			bool          showQuestItems: 1;                 // 0:3 - Not used by game, confirmed with console command `SetShowQuestItems`
+			bool          unk0_4: 1;                         // 0:4 - Unused?
+			bool          hasQueuedEquipAnim: 1;             // 0:5 - Set true in `OnItemEquipped` if a_playAnim && isPaused, false once out of menu
+			bool          escaping: 1;                       // 0:6 - Is Escaping from jail
+			bool          forceQuestTargetRepath: 1;         // 0:7 - Updates quest target in compass
+			bool          unk1_0: 1;                         // 1:0
+			bool          unk1_1: 1;                         // 1:1
+			bool          sleeping: 1;                       // 1:2
+			bool          unk1_3: 1;                         // 1:3
+			bool          unk1_4: 1;                         // 1:4
+			bool          unk1_5: 1;                         // 1:5
+			bool          greetingPlayer: 1;                 // 1:6 - NPC greeting player
+			bool          unk1_7: 1;                         // 1:7
+			bool          unk2_0: 1;                         // 2:0
+			bool          aiControlledToPos: 1;              // 2:1 - Guess from FO4, confirmed aiControlled related
+			bool          aiControlledFromPos: 1;            // 2:2 - Guess from FO4, confirmed aiControlled related
+			bool          aiControlledPackage: 1;            // 2:3 - Guess from FO4, confirmed aiControlled related
+			bool          returnToLastKnownGoodPosition: 1;  // 2:4 - return to lastKnownGoodPosition on next Update
+			bool          isBeingChased: 1;                  // 2:5 - unused along with chaseTimer
+			bool          unk2_6: 1;                         // 2:6
+			bool          unk2_7: 1;                         // 2:7
+			bool          isInThirdPersonMode: 1;            // 3:0
+			bool          unk3_1: 1;                         // 3:1
+			bool          unk3_2: 1;                         // 3:2
+			bool          unk3_3: 1;                         // 3:3
+			bool          target3DDistant: 1;                // 3:4 - Distance from object in crosshair > 1000
+			bool          isInCombat: 1;                     // 3:5
+			bool          attemptedYieldInCurrentCombat: 1;  // 3:6 - Set when yielding to guard for arrest dialogue, prevents multiple arrest dialogues
+			bool          unk3_7: 1;                         // 3:7
+			bool          isLoading: 1;                      // 4:0 - Is player loading a new area
+			bool          shouldUpdateCrosshair: 1;          // 4:1 - If forced off without letting Skyrim update this, crosshair UI won't update,
+			bool          unk4_2: 1;                         // 4:2
+			bool          healthTutorialShown: 1;            // 4:3
+			bool          magickaTutorialShown: 1;           // 4:4
+			bool          staminaTutorialShown: 1;           // 4:5
+			bool          goToJailQueued: 1;                 // 4:6 - Briefly set
+			bool          unk4_7: 1;                         // 4:7
+			bool          isSprinting: 1;                    // 5:0
+			bool          isSungazing: 1;                    // 5:1 - Is staring at the sun
+			bool          dragonRideTargetLocked: 1;         // 5:2
+			bool          everModded: 1;                     // 5:3
+			bool          servingJailTime: 1;                // 5:4 - Briefly set
+			bool          pad5_5: 3;                         // 5:5
+			std::uint16_t pad6;                              // 6
 		};
+		static_assert(sizeof(PlayerFlags) == 0x8);
 
-		enum class FlagBDB
-		{
-			kNone = 0,
-			kIsInThirdPersonMode = 1 << 0,
-			kIsInCombat = 1 << 5
-		};
-
-		enum class FlagBDC
-		{
-			kNone = 0,
-			kHealthTutorialShown = 1 << 3,
-			kMagickaTutorialShown = 1 << 4,
-			kStaminaTutorialShown = 1 << 5,
-			kGoToJailQueued = 1 << 6
-		};
-
-		enum class FlagBDD
-		{
-			kNone = 0,
-			kSprinting = 1 << 0,
-			kDragonRideTargetLocked = 1 << 2,
-			kEverModded = 1 << 3,
-			kServingJailTime = 1 << 4
-		};
-
-		struct Data928
+		struct QueuedWeapon
 		{
 		public:
 			// members
-			BSTArray<UnkValue> unk00;  // 00
-			BSTArray<UnkValue> unk18;  // 18
-			std::uint64_t      unk30;  // 30
-			std::uint64_t      unk38;  // 38
-			std::uint64_t      unk40;  // 40
+			TESObjectWEAP* rightHandWeapon;  // 00
+			TESObjectWEAP* leftHandWeapon;   // 08
 		};
-		static_assert(sizeof(Data928) == 0x48);
+		static_assert(sizeof(QueuedWeapon) == 0x10);
+
+		struct TeleportPath  // TODO: Should not be in Player class. Gets used in Pathing and other non-player areas
+		{
+		public:
+			struct Unk00Data
+			{
+			public:
+				// members
+				bool           unk00;         // 00 - Determines whether to use worldspace or cell?
+				char           pad01[7];      // 01
+				TESWorldSpace* worldspace;    // 08
+				TESObjectCELL* interiorCell;  // 10
+			};
+			static_assert(sizeof(Unk00Data) == 0x18);
+
+			struct Unk18Data
+			{
+			public:
+				// members
+				RE::TESObjectREFR* unk00;  // 00
+				std::uint64_t      unk08;  // 08
+				std::uint64_t      unk10;  // 10
+			};
+			static_assert(sizeof(Unk18Data) == 0x18);
+
+			// members
+			BSTArray<Unk00Data> unk00;  // 00
+			BSTArray<Unk18Data> unk18;  // 18
+			std::uint64_t       unk30;  // 30
+			std::uint64_t       unk38;  // 38
+			std::uint64_t       unk40;  // 40
+		};
+		static_assert(sizeof(TeleportPath) == 0x48);
+
+		struct PreTransformationData
+		{
+		public:
+			// members
+			MagicItem*      storedSelectedSpells[4];    // 00
+			TESRace*        storedRace;                 // 20
+			TESForm*        storedSelectedPower;        // 28
+			TESBoundObject* storedLastOneHandItems[2];  // 30
+		};
+		static_assert(sizeof(PreTransformationData) == 0x40);
 
 		struct CrimeValue
 		{
@@ -416,8 +485,8 @@ namespace RE
 	ActorHandle                lightTarget;                                 /* 048 */ \
 	float                      sortActorDistanceTimer;                      /* 04C */ \
 	float                      sitHeadingDelta;                             /* 050 */ \
-	ObjectRefHandle            unk054;                                      /* 054 */ \
-	Data928*                   unk058;                                      /* 058 */ \
+	ObjectRefHandle            playerMapMarker;                             /* 054 */ \
+	TeleportPath*              playerMarkerPath;                            /* 058 */ \
 	std::uint32_t              skillTrainingsThisLevel;                     /* 060 */ \
 	std::uint32_t              unk064;                                      /* 064 */ \
 	TESClass*                  defaultClass;                                /* 068 */ \
@@ -443,7 +512,7 @@ namespace RE
 	NiPointer<NiAVObject>      targeted3D;                                  /* 0F8 */ \
 	CombatGroup*               combatGroup;                                 /* 100 */ \
 	BSTArray<ActorHandle>      actorsToDisplayOnTheHUDArray;                /* 108 */ \
-	std::uint64_t              unk120;                                      /* 120 */ \
+	TESForm*                   advanceObject;                               /* 120 */ \
 	TESBoundObject*            lastOneHandItems[2];                         /* 128 */ \
 	std::uint32_t              teammateCount;                               /* 138 */ \
 	float                      combatTimer;                                 /* 13C */ \
@@ -458,6 +527,9 @@ namespace RE
 
 		~PlayerCharacter() override;  // 000
 
+		// override
+		void RemoveWeapon(BIPED_OBJECT equipIndex) override;  // 082
+
 		// add
 		SKYRIM_REL_VR_VIRTUAL void          Unk_12A(void);                                                                 // 12A
 		[[nodiscard]] SKYRIM_REL_VR_VIRTUAL std::uint32_t GetViolentCrimeGoldValue(const TESFaction* a_faction) const;     // 12B
@@ -466,13 +538,19 @@ namespace RE
 		SKYRIM_REL_VR_VIRTUAL void                        Unk_12E(void);                                                   // 12E - { return 0; }
 
 		static PlayerCharacter* GetSingleton();
+		static bool             IsGodMode();
 
 		void                                   ActivatePickRef();
 		void                                   AddPlayerAddItemEvent(TESObject* a_object, TESForm* a_owner, TESObjectREFR* a_container, AQUIRE_TYPE a_type);
 		void                                   AddSkillExperience(ActorValue a_skill, float a_experience);
 		bool                                   AttemptPickpocket(TESObjectREFR* a_containerRef, InventoryEntryData* a_entry, std::int32_t a_number, bool a_fromContainer = true);
 		bool                                   CenterOnCell(const char* a_cellName);
-		bool                                   CenterOnCell(RE::TESObjectCELL* a_cell);
+		bool                                   CenterOnCell(TESObjectCELL* a_cell);
+		bool                                   CheckCast(MagicItem* a_spell, Effect* a_effect, MagicSystem::CannotCastReason& a_reason);
+		void                                   DestroyMouseSprings();
+#ifndef ENABLE_SKYRIM_VR
+		void                                   EndGrabObject();
+#endif
 		[[nodiscard]] NiPointer<Actor>         GetActorDoingPlayerCommand() const;
 		[[nodiscard]] float                    GetArmorValue(InventoryEntryData* a_form);
 		[[nodiscard]] float                    GetDamage(InventoryEntryData* a_form);
@@ -490,17 +568,236 @@ namespace RE
 		void                                   SetEscaping(bool a_flag, bool a_escaped);
 		void                                   SetGodMode(bool a_enable);
 		void                                   StartGrabObject();
+		void                     			   UpdateCrosshairs();
 
-		template <class T>
-		inline BSTEventSource<T>* GetEventSource()
-		{
-			return static_cast<BSTEventSource<T>*>(this);
+		[[nodiscard]] inline BSTEventSource<BGSActorCellEvent>* AsBGSActorCellEventSource() noexcept {
+			return &REL::RelocateMemberIfNewer<BSTEventSource<BGSActorCellEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2D0, 0x2D8);
 		}
 
-		template <class T>
-		inline void AddEventSink(BSTEventSink<T>* a_sink)
+		[[nodiscard]] inline const BSTEventSource<BGSActorCellEvent>* AsBGSActorCellEventSource() const noexcept {
+			return &REL::RelocateMemberIfNewer<BSTEventSource<BGSActorCellEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2D0, 0x2D8);
+		}
+
+		[[nodiscard]] inline BSTEventSource<BGSActorDeathEvent>* AsBGSActorDeathEventSource() noexcept {
+			return &REL::RelocateMemberIfNewer<BSTEventSource<BGSActorDeathEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x328, 0x330);
+		}
+
+		[[nodiscard]] inline const BSTEventSource<BGSActorDeathEvent>* AsBGSActorDeathEventSource() const noexcept {
+			return &REL::RelocateMemberIfNewer<BSTEventSource<BGSActorDeathEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2D0, 0x330);
+		}
+
+		[[nodiscard]] inline BSTEventSource<PositionPlayerEvent>* AsPositionPlayerEventSource() noexcept {
+			return &REL::RelocateMemberIfNewer<BSTEventSource<PositionPlayerEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x380, 0x388);
+		}
+
+		[[nodiscard]] inline const BSTEventSource<PositionPlayerEvent>* AsPositionPlayerEventSource() const noexcept {
+			return &REL::RelocateMemberIfNewer<BSTEventSource<PositionPlayerEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x380, 0x388);
+		}
+
+		[[nodiscard]] inline BSTEventSink<MenuOpenCloseEvent>* AsMenuOpenCloseEventSink() noexcept {
+			return &REL::RelocateMemberIfNewer<BSTEventSink<MenuOpenCloseEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2B0, 0x2B8);
+		}
+
+		[[nodiscard]] inline const BSTEventSink<MenuOpenCloseEvent>* AsMenuOpenCloseEventSink() const noexcept {
+			return &REL::RelocateMemberIfNewer<BSTEventSink<MenuOpenCloseEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2B0, 0x2B8);
+		}
+
+		[[nodiscard]] inline BSTEventSink<MenuModeChangeEvent>* AsMenuModeChangeEventSink() noexcept {
+			return &REL::RelocateMemberIfNewer<BSTEventSink<MenuModeChangeEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2B8, 0x2C0);
+		}
+
+		[[nodiscard]] inline const BSTEventSink<MenuModeChangeEvent>* AsMenuModeChangeEventSink() const noexcept {
+			return &REL::RelocateMemberIfNewer<BSTEventSink<MenuModeChangeEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2B8, 0x2C0);
+		}
+
+		[[nodiscard]] inline BSTEventSink<UserEventEnabledEvent>* AsUserEventEnabledEventSink() noexcept {
+			return &REL::RelocateMemberIfNewer<BSTEventSink<UserEventEnabledEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2C0, 0x2C8);
+		}
+
+		[[nodiscard]] inline const BSTEventSink<UserEventEnabledEvent>* AsUserEventEnabledEventSink() const noexcept {
+			return &REL::RelocateMemberIfNewer<BSTEventSink<UserEventEnabledEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2C0, 0x2C8);
+		}
+
+		[[nodiscard]] inline BSTEventSink<TESTrackedStatsEvent>* AsTESTrackedStatsEventSink() noexcept {
+			return &REL::RelocateMemberIfNewer<BSTEventSink<TESTrackedStatsEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2C8, 0x2D0);
+		}
+
+		[[nodiscard]] inline const BSTEventSink<TESTrackedStatsEvent>* AsTESTrackedStatsEventSink() const noexcept {
+			return &REL::RelocateMemberIfNewer<BSTEventSink<TESTrackedStatsEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2C8, 0x2D0);
+		}
+
+		struct PLAYER_RUNTIME_DATA
 		{
-			GetEventSource<T>()->AddEventSink(a_sink);
+#ifndef ENABLE_SKYRIM_VR                                                                     // Non-VR
+#define PLAYER_RUNTIME_DATA_CONTENT \
+			mutable BSSpinLock questTargetsLock;                                                 /* 3D8, 3E0 */ \
+			CRIME_VALUE_CONTENT;                                                                 /* 3E0 */ \
+			ObjectRefHandle                                         commandWaitMarker;           /* 440 */ \
+			std::uint32_t                                           pad444;                      /* 444 */ \
+			BSTHashMap<const TESFaction*, FriendshipFactionsStruct> factionOwnerFriendsMap;      /* 448 */ \
+			NiPoint3                                                lastKnownGoodPosition;       /* 478 */ \
+			NiPoint3                                                bulletAutoAim;               /* 484 */ \
+			NiPoint3                                                cachedVelocity;              /* 490 */ \
+			float                                                   pad49C;                      /* 49C */ \
+			BGSNote*                                                unusedNote;                  /* 4A0 */ \
+		    BGSNote*                                                unusedNote2;                 /* 4A8 */ \
+			BSTArray<PerkRankData*>                                 addedPerks;                  /* 4B0 */ \
+			BSTArray<BGSPerk*>                                      perks;                       /* 4C8 */ \
+			BSTArray<BGSPerk*>                                      standingStonePerks;          /* 4E0 */ \
+			BSTArray<ObjectRefHandle>                               currentMapMarkers;           /* 4F8 */ \
+			BSTArray<BSTTuple<NiPoint3, AITimeStamp>>               velocityArray;               /* 510 */ \
+			BSTArray<ProjectileHandle>                              runesCast;                   /* 528 */ \
+			BSTArray<void*>                                         imageSpaceModifierAnims1;    /* 540 */ \
+			BSTArray<void*>                                         imageSpaceModifierAnims2;    /* 558 */ \
+			BSSimpleList<TESQuestStageItem*>                        questLog;                    /* 570 */ \
+			BSTArray<BGSInstancedQuestObjective>                    objectives;                  /* 580 */ \
+			BSTHashMap<TESQuest*, BSTArray<TESQuestTarget*>*>       questTargets;                /* 598 */ \
+			BSTHashMap<UnkKey, UnkValue>                            currentSayOnceInfosMap;      /* 5C8 */ \
+			BSSimpleList<ObjectRefHandle>                           droppedRefList;              /* 5F8 */ \
+			NiTMap<std::uint32_t, std::uint8_t>                     randomDoorSpaceMap;          /* 608 */ \
+			TESWorldSpace*                                          cachedWorldSpace;            /* 628 */ \
+			NiPoint3                                                exteriorPosition;            /* 630 */ \
+			std::uint32_t                                           pad63C;                      /* 63C */ \
+			PLAYER_TARGET_LOC                                       queuedTargetLoc;             /* 640 */ \
+			BSSoundHandle                                           unusedSound;                 /* 688 */ \
+			BSSoundHandle                                           magicFailureSound;           /* 694 */ \
+			BSSoundHandle                                           shoutFailureSound;           /* 6A0 */ \
+			std::uint32_t                                           pad6AC;                      /* 6AC */ \
+			DialoguePackage*                                        closestConversation;         /* 6B0 */ \
+			std::uint32_t                                           unk6B8;                      /* 6B8 */ \
+			std::uint32_t                                           unk6BC;                      /* 6BC */ \
+			DialoguePackage*                                        aiConversationRunning;       /* 6C0 */ \
+			std::int32_t                                            numberofStealWarnings;       /* 6C8 */ \
+			float                                                   stealWarningTimer;           /* 6CC */ \
+			std::int32_t                                            numberofPickpocketWarnings;  /* 6D0 */ \
+			float                                                   pickPocketWarningTimer;      /* 6D4 */ \
+			AITimeStamp                                             warnToLeaveTimeStamp;        /* 6D8 */ \
+			std::uint32_t                                           pad6DC;                      /* 6DC */ \
+			ImageSpaceModifierInstanceDOF*                          ironsightsDOFInstance;       /* 6E0 */ \
+			ImageSpaceModifierInstanceDOF*                          vatsDOFInstance;             /* 6E8 */ \
+			ImageSpaceModifierInstanceDOF*                          dynamicDOFInstance;          /* 6F0 */ \
+			float                                                   dynamicDOFFocusTime;         /* 6F8 */ \
+			bool                                                    dynamicDOFFocused;           /* 6FC */ \
+			std::uint8_t                                            unk6FD;                      /* 6FD */ \
+			std::uint16_t                                           unk6FE;                      /* 6FE */ \
+			NiPoint3                                                dynamicDOFLastAngle;         /* 700 */ \
+			NiPoint3                                                dynamicDOFLastPosition;      /* 70C */ \
+			TESFaction*                                             currentPrisonFaction;        /* 718 */ \
+			std::int32_t                                            jailSentence;                /* 720 */ \
+			std::uint32_t                                           pad724;                      /* 724 */ \
+			void*                                                   unk728;                      /* 728 - smart ptr */ \
+			QueuedWeapon                                            queuedWeaponAttachs[WEAPON_TYPE::kTotal]; /* 730 */ \
+			std::int32_t                                            vampireFeedDetection;        /* 7D0 */ \
+			std::uint32_t                                           mapMarkerIterator;           /* 7D4 */ \
+			RefHandle                                               forceActivateRef;            /* 7D8 */ \
+			PlayerActionObject                                      playerActionObjects[15];     /* 7DC */ \
+			PLAYER_ACTION                                           mostRecentAction;            /* 890 */ \
+			ActorHandle                                             actorDoingPlayerCommand;     /* 894 */ \
+			BSTSmallArray<hkRefPtr<bhkMouseSpringAction>, 4>        grabSpring;                  /* 898 */ \
+			ObjectRefHandle                                         grabbedObject;               /* 8C8 */ \
+			float                                                   grabObjectWeight;            /* 8CC */ \
+			INFO_RUNTIME_DATA_CONTENT;                                                           /* 8D0 */ \
+			std::uint8_t                                  unkA20[0xA0];                          /* A20 */ \
+			std::uint32_t                                 unkAC0;                                /* AC0 */ \
+			std::uint32_t                                 unkAC4;                                /* AC4 */ \
+			BGSLocation*                                  currentLocation;                       /* AC8 */ \
+			AITimeStamp                                   cachedVelocityTimeStamp;               /* AD0 */ \
+			float                                         telekinesisDistance;                   /* AD4 */ \
+			float                                         commandTimer;                          /* AD8 */ \
+			float                                         sunGazeTimer;                          /* ADC */ \
+			TESImageSpaceModifier*                        sunGazeImageModifierSpace;             /* AE0 */ \
+			ActorValue                                    advanceSkill;                          /* AE8 */ \
+			std::uint32_t                                 advanceAction;                         /* AEC */ \
+			stl::enumeration<DEFAULT_OBJECT, std::int32_t> animationObjectAction;                /* AF0 */ \
+			stl::enumeration<GrabbingType, std::uint32_t> grabType;                              /* AF4 */ \
+			GAME_STATE_DATA_CONTENT;                                                             /* AF8 */ \
+			std::uint32_t        unkB04;                                                         /* B04 */ \
+			Crime*               resistArrestCrime;                                              /* B08 */ \
+			BSTArray<TintMask*>  tintMasks;                                                      /* B10 */ \
+			BSTArray<TintMask*>* overlayTintMasks;                                               /* B28 */ \
+			RACE_DATA_CONTENT;                                                                   /* B30 */ \
+			std::int32_t                            unkB48;                                      /* B48 */ \
+			std::uint32_t                           padB4C;                                      /* B4C */ \
+			BSTArray<std::uint64_t>                 unkB50;                                      /* B50 */ \
+			std::uint64_t                           unkB68;                                      /* B68 */ \
+			std::uint64_t                           unkB70;                                      /* B70 */ \
+			std::uint64_t                           unkB78;                                      /* B78 */ \
+			std::uint64_t                           unkB80;                                      /* B80 */ \
+			std::int32_t                            unkB88;                                      /* B88 */ \
+			std::uint32_t                           padB8C;                                      /* B8C */ \
+			std::uint64_t                           unkB90;                                      /* B90 */ \
+			TESBoundObject*                         unkB98;                                      /* B98 */ \
+			BSTSmallArray<void*, 4>                 unkBA0;                                      /* BA0 */ \
+			PreTransformationData*                  preTransformationData;                       /* BD0 */ \
+			PlayerFlags                             playerFlags;                                 /* BD8 */
+#elif !defined(ENABLE_SKYRIM_AE) && !defined(ENABLE_SKYRIM_SE)                               // VR
+#define PLAYER_RUNTIME_DATA_CONTENT \
+			std::uint64_t unk3D8;        /* 3D8 */ \
+			std::uint64_t unk3E0;        /* 3E0 */ \
+			std::uint64_t unk3E8;        /* 3E8 */ \
+			VR_NODE_DATA_CONTENT;        /* 3F0 */ \
+			std::uint64_t unk680;        /* 680 */ \
+			std::uint64_t unk688;        /* 688 */ \
+			std::uint64_t unk690;        /* 690 */ \
+			std::uint64_t unk698;        /* 698 */ \
+			std::uint64_t unk6A0;        /* 6A0 */ \
+			std::uint64_t unk6A8[0x65];  /* 6A8 */ \
+			CRIME_VALUE_CONTENT;         /* 9D0 */ \
+			std::uint64_t unkA30[0x11];  /* A30 */ \
+			void*         perkArray;     /* AB8 */ \
+			std::uint64_t unk6C0[0x14];  /* AC0 */ \
+			/*BSTArray<PerkRankData*>								addedPerks;									  // B60 */ \
+			/*BSTArray<BGSPerk*>									perks;										  // B68 */ \
+			/*BSTArray<BGSPerk*>									standingStonePerks;							  // B70 */ \
+			std::uint64_t addedPerks;                /* B60 - these 3 here gotta be fixed */ \
+			std::uint64_t perks;                     /* B68 */ \
+			std::uint64_t standingStonePerks;        /* B70 */ \
+			std::uint64_t unkB78;                    /* B78 */ \
+			std::uint64_t unkB80;                    /* B80 */ \
+			std::uint64_t unkMessageArrayPtr;        /* B88 */ \
+			std::uint64_t unkB90;                    /* B90 */ \
+			std::uint64_t unkB98;                    /* B98 */ \
+			std::uint64_t unkBA0;                    /* BA0 */ \
+			std::uint64_t unkBA8;                    /* BA8 */ \
+			std::uint64_t unkBB0[0x25];              /* BB0 */ \
+			std::uint64_t imageSpaceModifierAnims1;  /* CD8 - Wrong Datatype from Below */ \
+			std::uint64_t imageSpaceModifierAnims2;  /* CE0 - Wrong Datatype from below */ \
+			std::uint64_t unkCE8[0x34];              /* CE8 */ \
+			std::uint32_t padE90;                    /* E88 */ \
+			ActorHandle   actorDoingPlayerCommand;   /* E8C */ \
+			std::uint64_t unkE90;                    /* E90 */ \
+			std::uint64_t unkE98[0x27];              /* E98 */ \
+			/* BSTSmallArray<hkRefPtr<bhkMouseSpringAction>, 4>		grabSpring;                                   // F00    // not used in vr as far as i can tell   F08?????? */ \
+			INFO_RUNTIME_DATA_CONTENT;                    /* FD0 */ \
+			std::uint64_t unk1120[0x1A];             /* 1120 */ \
+			std::uint32_t unk11F0;                   /* 11F0 */ \
+			GAME_STATE_DATA_CONTENT;                 /* 11F4 */ \
+			std::uint64_t unk1200;                   /* 1200 */ \
+			std::uint64_t unk1208;                   /* 1208 */ \
+			std::uint64_t unk1210;                   /* 1210 */ \
+			std::uint64_t unk1218;                   /* 1218 */ \
+			std::uint64_t unk1220;                   /* 1220 */ \
+			RACE_DATA_CONTENT;                       /* 1228 */ \
+			std::uint64_t unk1240[0x12];             /* 1240 */ \
+			std::uint8_t  pad12D0;                   /* 12D0 */ \
+			std::uint8_t  flags;                     /* 12D1  -- TODO MAP THESE FLAGS OUT */ \
+			std::uint16_t pad12D2;                   /* 12D2 */ \
+			std::uint32_t unk12D4;                   /* 12D4 */
+#else
+#define PLAYER_RUNTIME_DATA_CONTENT
+#endif
+
+			PLAYER_RUNTIME_DATA_CONTENT
+		};
+
+		[[nodiscard]] inline PLAYER_RUNTIME_DATA& GetPlayerRuntimeData() noexcept
+		{
+			return REL::RelocateMemberIfNewer<PLAYER_RUNTIME_DATA>(SKSE::RUNTIME_SSE_1_6_629, this, 0x3D8, 0x3E0);
+		}
+
+		[[nodiscard]] inline const PLAYER_RUNTIME_DATA& GetPlayerRuntimeData() const noexcept
+		{
+			return REL::RelocateMemberIfNewer<PLAYER_RUNTIME_DATA>(SKSE::RUNTIME_SSE_1_6_629, this, 0x3D8, 0x3E0);
 		}
 
 		struct PLAYER_RUNTIME_DATA

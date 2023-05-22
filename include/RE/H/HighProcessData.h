@@ -262,7 +262,7 @@ namespace RE
 		Data208*                                              unk208;                                    // 208
 		std::uint32_t                                         unk210;                                    // 210
 		PLAYER_ACTION                                         playerActionReaction;                      // 214
-		BSFixedString                                         unk218;                                    // 218
+		BSFixedString                                         subtitle;                                  // 218
 		BSTArray<BSTTuple<FormID, NiPointer<ActorKnowledge>>> knowledgeArray;                            // 220
 		mutable BSReadWriteLock                               knowledgeLock;                             // 238
 		BSTArray<QueuedDialogueType*>                         queueofGreetings;                          // 240
@@ -304,7 +304,7 @@ namespace RE
 		std::uint64_t                                         unk338;                                    // 338
 		float                                                 closeDialogueTimer;                        // 340
 		std::uint32_t                                         unk344;                                    // 344
-		std::uint64_t                                         unk348;                                    // 348
+		TESIdleForm*                                          currentProcessIdle;                        // 348
 		RefHandle                                             unk350;                                    // 350
 		std::uint32_t                                         unk354;                                    // 354
 		std::uint64_t                                         unk358;                                    // 358

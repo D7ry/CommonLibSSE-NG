@@ -262,8 +262,8 @@ namespace RE
 			return *this;
 		}
 
-		[[nodiscard]] static std::uint32_t ColorToInt(const NiColor& a_rhs);
-		[[nodiscard]] static std::string   ColorToString(const NiColor& a_rhs);
+		[[nodiscard]] std::uint32_t ToInt() const;
+		[[nodiscard]] std::string   ToHex() const;
 
 		// members
 		float red;    // 0
@@ -313,6 +313,7 @@ namespace RE
 			alpha(a_alpha)
 		{}
 
+		NiColorA(const Color& a_rhs);
 		~NiColorA() noexcept = default;
 
 		constexpr NiColorA& operator=(const NiColorA& a_rhs) noexcept

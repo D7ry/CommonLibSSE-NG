@@ -104,7 +104,11 @@ namespace SKSE
 
 			std::filesystem::path path = knownPath.get();
 			path /= "My Games";
-			path /= *REL::Relocation<const char**>(RELOCATION_ID(508778, 380738)).get();
+			if SKYRIM_REL_VR_CONSTEXPR (REL::Module::IsVR()) {
+				path /= "Skyrim VR";
+			} else {
+                path /= *REL::Relocation<const char**>(RELOCATION_ID(508778, 380738)).get();
+			}
 			path /= "SKSE"sv;
 			return path;
 		}

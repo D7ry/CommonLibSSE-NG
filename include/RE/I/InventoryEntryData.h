@@ -35,6 +35,7 @@ namespace RE
 
 		void                                          AddExtraList(ExtraDataList* a_extra);
 		[[nodiscard]] const char*                     GetDisplayName();
+		[[nodiscard]] EnchantmentItem*                GetEnchantment() const;
 		[[nodiscard]] std::optional<double>           GetEnchantmentCharge() const;
 		[[nodiscard]] constexpr TESBoundObject*       GetObject() noexcept { return object; }
 		[[nodiscard]] constexpr const TESBoundObject* GetObject() const noexcept { return object; }
@@ -48,13 +49,17 @@ namespace RE
 			return func(this);
 		}
 
-		[[nodiscard]] float GetWeight() const;
-		[[nodiscard]] bool  IsEnchanted() const;
-		[[nodiscard]] bool  IsFavorited() const;
-		[[nodiscard]] bool  IsLeveled() const;
-		[[nodiscard]] bool  IsPoisoned() const;
-		[[nodiscard]] bool  IsWorn() const;
-		[[nodiscard]] bool  IsWornLeft() const;
+		[[nodiscard]] std::int32_t                    GetValue() const;
+		[[nodiscard]] float                           GetWeight() const;
+		[[nodiscard]] bool                            IsEnchanted() const;
+		[[nodiscard]] bool                            IsFavorited() const;
+		[[nodiscard]] bool                            IsLeveled() const;
+		[[nodiscard]] bool                            IsPoisoned() const;
+		[[nodiscard]] bool                            IsWorn() const;
+		[[nodiscard]] bool                            IsOwnedBy(Actor* a_testOwner, bool a_defaultTo = true);
+		[[nodiscard]] bool                            IsOwnedBy(Actor* a_testOwner, TESForm* a_itemOwner, bool a_defaultTo = true);
+		[[nodiscard]] bool                            IsQuestObject() const;
+		void                                          PoisonObject(AlchemyItem* a_alchItem, std::uint32_t a_count);
 
 		[[nodiscard]] bool IsOwnedBy(Actor* a_testOwner, bool a_defaultTo = true)
 		{
@@ -89,12 +94,7 @@ namespace RE
 		std::uint32_t                 pad14{ 0 };             // 14
 
 	private:
-		[[nodiscard]] bool IsOwnedBy_Impl(Actor* a_testOwner, TESForm* a_itemOwner, bool a_defaultTo)
-		{
-			using func_t = decltype(&InventoryEntryData::IsOwnedBy_Impl);
-			REL::Relocation<func_t> func{ RELOCATION_ID(15782, 16020) };
-			return func(this, a_testOwner, a_itemOwner, a_defaultTo);
-		}
+		[[nodiscard]] bool IsOwnedBy_Impl(Actor* a_testOwner, TESForm* a_itemOwner, bool a_defaultTo);
 
 		template <class T>
 		[[nodiscard]] bool HasExtraDataType() const

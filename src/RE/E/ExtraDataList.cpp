@@ -23,7 +23,7 @@ namespace RE
 	bool BaseExtraList::PresenceBitfield::HasType(std::uint32_t a_type) const
 	{
 		const std::uint32_t index = (a_type >> 3);
-		if (index >= 0x18) {
+		if (index >= 0x17) {
 			return false;
 		}
 		const std::uint8_t bitMask = 1 << (a_type % 8);
@@ -256,6 +256,36 @@ namespace RE
 	{
 		auto xSoul = GetByType<ExtraSoul>();
 		return xSoul ? *xSoul->soul : SOUL_LEVEL::kNone;
+	}
+
+	ObjectRefHandle ExtraDataList::GetTeleportLinkedDoor()
+	{
+		auto xTeleport = GetByType<ExtraTeleport>();
+
+		return xTeleport && xTeleport->teleportData ?
+                   xTeleport->teleportData->linkedDoor :
+                   ObjectRefHandle();
+	}
+
+	void ExtraDataList::SetCount(std::uint16_t a_count)
+	{
+		using func_t = decltype(&ExtraDataList::SetCount);
+		REL::Relocation<func_t> func{ Offset::ExtraDataList::SetCount };
+		return func(this, a_count);
+	}
+
+	void ExtraDataList::SetEncounterZone(BGSEncounterZone* a_zone)
+	{
+		if (auto xZone = GetByType<ExtraEncounterZone>()) {
+			if (a_zone) {
+				xZone->zone = a_zone;
+			} else {
+				Remove(xZone);
+			}
+		} else if (a_zone) {
+			xZone = new ExtraEncounterZone(a_zone);
+			Add(xZone);
+		}
 	}
 
 	void ExtraDataList::SetExtraFlags(ExtraFlags::Flag a_flags, bool a_enable)

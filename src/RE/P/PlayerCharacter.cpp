@@ -19,6 +19,12 @@ namespace RE
 		return singleton->get();
 	}
 
+	bool PlayerCharacter::IsGodMode()
+	{
+		REL::Relocation<bool*> singleton{ RELOCATION_ID(517711, 404238) };
+		return *singleton;
+	}
+
 	void PlayerCharacter::ActivatePickRef()
 	{
 		using func_t = decltype(&PlayerCharacter::ActivatePickRef);
@@ -29,7 +35,7 @@ namespace RE
 	void PlayerCharacter::AddPlayerAddItemEvent(TESObject* a_object, TESForm* a_owner, TESObjectREFR* a_container, AQUIRE_TYPE a_type)
 	{
 		using func_t = decltype(&PlayerCharacter::AddPlayerAddItemEvent);
-		REL::Relocation<func_t> func{ REL::ID(40456) };
+		REL::Relocation<func_t> func{ RELOCATION_ID(39384, 40456) };
 		return func(this, a_object, a_owner, a_container, a_type);
 	}
 
@@ -45,14 +51,41 @@ namespace RE
 		return CenterOnCell_Impl(a_cellName, nullptr);
 	}
 
-	bool PlayerCharacter::CenterOnCell(RE::TESObjectCELL* a_cell)
+	bool PlayerCharacter::CenterOnCell(TESObjectCELL* a_cell)
 	{
 		return CenterOnCell_Impl(nullptr, a_cell);
 	}
 
+	bool PlayerCharacter::CheckCast(MagicItem* a_spell, Effect* a_effect, MagicSystem::CannotCastReason& a_reason)
+	{
+		using func_t = decltype(&PlayerCharacter::CheckCast);
+		REL::Relocation<func_t> func{ RELOCATION_ID(39409, 40484) };
+		return func(this, a_spell, a_effect, a_reason);
+	}
+
+	void PlayerCharacter::DestroyMouseSprings()
+	{
+		using func_t = decltype(&PlayerCharacter::DestroyMouseSprings);
+		REL::Relocation<func_t> func{ RELOCATION_ID(39480, 40557) };
+		return func(this);
+	}
+
+#ifndef ENABLE_SKYRIM_VR
+	void PlayerCharacter::EndGrabObject()
+	{
+		if (GetPlayerRuntimeData().grabType == GrabbingType::kNormal) {
+			DestroyMouseSprings();
+		}
+	}
+#endif
+
 	NiPointer<Actor> PlayerCharacter::GetActorDoingPlayerCommand() const
 	{
-		return REL::RelocateMember<ActorHandle>(this, 0x894, 0xE8C).get();
+        if SKYRIM_REL_CONSTEXPR (REL::Module::IsVR()) {
+            return REL::RelocateMember<ActorHandle>(this, 0, 0xE8C).get();
+        } else {
+            return REL::RelocateMemberIfNewer<ActorHandle>(SKSE::RUNTIME_SSE_1_6_629, this, 0x894, 0x89C).get();
+        }
 	}
 
 	float PlayerCharacter::GetArmorValue(InventoryEntryData* a_form)
@@ -74,7 +107,7 @@ namespace RE
 		if SKYRIM_REL_CONSTEXPR (Module::IsVR()) {
 			return nullptr;
 		} else {
-			return REL::RelocateMember<ObjectRefHandle>(this, 0x8C8, 0).get();
+			return REL::RelocateMemberIfNewer<ObjectRefHandle>(SKSE::RUNTIME_SSE_1_6_629, this, 0x8C8, 0x8D0).get();
 		}
 	}
 
@@ -97,12 +130,12 @@ namespace RE
 		if SKYRIM_REL_VR_CONSTEXPR (REL::Module::IsVR()) {
 			return nullptr;
 		} else {
-			auto* tryOverlayTintMasks = REL::RelocateMember<BSTArray<TintMask*>*>(this, 0xB28, 0);
+			auto* tryOverlayTintMasks = REL::RelocateMemberIfNewer<BSTArray<TintMask*>*>(SKSE::RUNTIME_SSE_1_6_629, this, 0xB28, 0xB30);
 			if (!tryOverlayTintMasks) {
 				return nullptr;
 			}
 
-			auto& tintMasksValue = REL::RelocateMember<BSTArray<TintMask*>>(this, 0xB10, 0);
+			auto& tintMasksValue = REL::RelocateMemberIfNewer<BSTArray<TintMask*>>(SKSE::RUNTIME_SSE_1_6_629, this, 0xB10, 0xB18);
 			for (std::uint32_t i = 0; i < tintMasksValue.size(); ++i) {
 				if (tintMasksValue[i] == a_original) {
 					return i < tryOverlayTintMasks->size() ? (*tryOverlayTintMasks)[i] : nullptr;
@@ -118,8 +151,8 @@ namespace RE
 		if SKYRIM_REL_VR_CONSTEXPR (REL::Module::IsVR()) {
 			return nullptr;
 		} else {
-			auto* tryOverlayTintMasks = REL::RelocateMember<BSTArray<TintMask*>*>(this, 0xB28, 0);
-			return tryOverlayTintMasks ? tryOverlayTintMasks : &REL::RelocateMember<BSTArray<TintMask*>>(this, 0xB10, 0);
+			auto* tryOverlayTintMasks = REL::RelocateMemberIfNewer<BSTArray<TintMask*>*>(SKSE::RUNTIME_SSE_1_6_629, this, 0xB28, 0xB30);
+			return tryOverlayTintMasks ? tryOverlayTintMasks : &REL::RelocateMemberIfNewer<BSTArray<TintMask*>>(SKSE::RUNTIME_SSE_1_6_629, this, 0xB10, 0xB18);
 		}
 	}
 
@@ -136,7 +169,12 @@ namespace RE
 
 	bool PlayerCharacter::HasActorDoingCommand() const
 	{
-		return static_cast<bool>(REL::RelocateMember<ActorHandle>(this, 0x894, 0xE8C));
+        if SKYRIM_REL_VR_CONSTEXPR (REL::Module::IsVR()) {
+            return static_cast<bool>(REL::RelocateMember<ActorHandle>(this, 0, 0xE8C));
+        }
+        else {
+            return static_cast<bool>(REL::RelocateMemberIfNewer<ActorHandle>(SKSE::RUNTIME_SSE_1_6_629, this, 0x894, 0x89C));
+        }
 	}
 
 	bool PlayerCharacter::IsGrabbing() const
@@ -144,7 +182,7 @@ namespace RE
 		if SKYRIM_REL_CONSTEXPR (Module::IsVR()) {
 			return false;
 		} else {
-			return static_cast<bool>(REL::RelocateMember<ObjectRefHandle>(this, 0x8C8, 0));
+			return static_cast<bool>(REL::RelocateMemberIfNewer<ObjectRefHandle>(SKSE::RUNTIME_SSE_1_6_629, this, 0x8C8, 0x8D0));
 		}
 	}
 
@@ -173,6 +211,13 @@ namespace RE
 	{
 		using func_t = decltype(&PlayerCharacter::StartGrabObject);
 		REL::Relocation<func_t> func{ Offset::PlayerCharacter::StartGrabObject };
+		return func(this);
+	}
+
+	void PlayerCharacter::UpdateCrosshairs()
+	{
+		using func_t = decltype(&PlayerCharacter::UpdateCrosshairs);
+		REL::Relocation<func_t> func(RELOCATION_ID(39535, 40621));
 		return func(this);
 	}
 

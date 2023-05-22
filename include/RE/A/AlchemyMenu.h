@@ -19,8 +19,8 @@ namespace RE::CraftingSubMenus
 
 			~QuitMenuCallback() override;  // 00
 
-			// override (IMessageBoxCallback)
-			void Run(Message a_msg) override;  // 01
+				// override (IMessageBoxCallback)
+				void Run(Message a_msg) override;  // 01
 
 			// members
 			AlchemyMenu* subMenu;  // 10
@@ -36,19 +36,19 @@ namespace RE::CraftingSubMenus
 		};
 		static_assert(sizeof(UsableEffectMap) == 0xC);
 
-		class MenuIngredientEntry
-		{
-		public:
-			InventoryEntryData* ingredient;       // 00
-			std::uint8_t        effect1FilterID;  // 09
-			std::uint8_t        effect2FilterID;  // 0A
-			std::uint8_t        effect3FilterID;  // 0B
-			std::uint8_t        effect4FilterID;  // 0C
-			std::uint8_t        isSelected;       // 0D
-			std::uint8_t        isNotGreyed;      // 0E
-			std::uint16_t       padE;             // 0F
-		};
-		static_assert(sizeof(MenuIngredientEntry) == 0x10);
+			class MenuIngredientEntry
+			{
+			public:
+				InventoryEntryData* ingredient;       // 00
+				std::uint8_t        effect1FilterID;  // 09
+				std::uint8_t        effect2FilterID;  // 0A
+				std::uint8_t        effect3FilterID;  // 0B
+				std::uint8_t        effect4FilterID;  // 0C
+				std::uint8_t        isSelected;       // 0D
+				std::uint8_t        isNotGreyed;      // 0E
+				std::uint16_t       padE;             // 0F
+			};
+			static_assert(sizeof(MenuIngredientEntry) == 0x10);
 
 		class PotionCreationData
 		{
@@ -60,9 +60,9 @@ namespace RE::CraftingSubMenus
 
 		~AlchemyMenu() override;  // 00
 
-		// override (CraftingSubMenu)
-		void Accept(CallbackProcessor* a_cbReg) override;  // 01
-		void Unk_05(void) override;                        // 05
+			// override (CraftingSubMenu)
+			void Accept(CallbackProcessor* a_cbReg) override;          // 01
+			bool ProcessUserEvent(BSFixedString* a_control) override;  // 05
 
 		// members
 		RE::BSTArray<MenuIngredientEntry> ingredientsEntries;       // 100

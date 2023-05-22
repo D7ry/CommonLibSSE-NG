@@ -5,13 +5,14 @@
 #include "RE/N/NiMath.h"
 #include "RE/T/TESFaction.h"
 #include "RE/T/TESNPC.h"
+#include "RE/T/TESRegionList.h"
 #include "RE/T/TESWorldSpace.h"
 
 namespace RE
 {
 	void TESObjectCELL::ForEachReference(std::function<BSContainer::ForEachResult(TESObjectREFR&)> a_callback) const
 	{
-		auto&           runtimeData = GetRuntimeData();
+		auto& runtimeData = GetRuntimeData();
 		BSSpinLockGuard locker(runtimeData.spinLock);
 		for (const auto& ref : runtimeData.references) {
 			if (ref && a_callback(*ref) == BSContainer::ForEachResult::kStop) {
@@ -26,8 +27,8 @@ namespace RE
 		ForEachReference([&](TESObjectREFR& ref) {
 			const auto distance = a_origin.GetSquaredDistance(ref.GetPosition());
 			return distance <= squaredRadius ?
-			           a_callback(ref) :
-			           BSContainer::ForEachResult::kContinue;
+                       a_callback(ref) :
+                       BSContainer::ForEachResult::kContinue;
 		});
 	}
 
@@ -80,7 +81,7 @@ namespace RE
 	TESForm* TESObjectCELL::GetOwner()
 	{
 		auto& runtimeData = GetRuntimeData();
-		auto  owner = extraList.GetOwner();
+		auto owner = extraList.GetOwner();
 		if (owner) {
 			return owner;
 		}
@@ -110,6 +111,13 @@ namespace RE
 		}
 
 		return runtimeData.worldSpace ? runtimeData.worldSpace->GetDefaultWaterHeight() : -NI_INFINITY;
+	}
+
+	TESRegionList* TESObjectCELL::GetRegionList(bool a_createIfMissing)
+	{
+		using func_t = decltype(&TESObjectCELL::GetRegionList);
+		REL::Relocation<func_t> func{ RELOCATION_ID(18540, 18999) };
+		return func(this, a_createIfMissing);
 	}
 
 	bool TESObjectCELL::GetWaterHeight(const NiPoint3& a_pos, float& a_waterHeight)

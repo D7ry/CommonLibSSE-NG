@@ -9,6 +9,7 @@
 
 namespace RE
 {
+	class hkpConstraintInstance;
 	class hkLocalFrame;
 	class hkSpuCollisionCallbackUtil;
 	class hkpAction;
@@ -23,6 +24,7 @@ namespace RE
 	{
 	public:
 		inline static constexpr auto RTTI = RTTI_hkpEntity;
+		inline static constexpr auto VTABLE = VTABLE_hkpEntity;
 
 		enum class SpuCollisionCallbackEventFilter
 		{

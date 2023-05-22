@@ -5,6 +5,7 @@
 #include "RE/B/BSPointerHandle.h"
 #include "RE/E/ExtraDataTypes.h"
 #include "RE/E/ExtraFlags.h"
+#include "RE/E/ExtraLevCreaModifier.h"
 #include "RE/F/FormTypes.h"
 #include "RE/M/MemoryManager.h"
 #include "RE/S/SoulLevels.h"
@@ -187,22 +188,22 @@ namespace RE
 		TESForm*              GetOwner();
 		SOUL_LEVEL            GetSoulLevel() const;
 		ObjectRefHandle       GetTeleportLinkedDoor();
+		void                  SetCount(std::uint16_t a_count);
+		void                  SetEncounterZone(BGSEncounterZone* a_zone);
 		void                  SetExtraFlags(ExtraFlags::Flag a_flags, bool a_enable);
-		void                  SetHeadingTargetRefHandle(ObjectRefHandle& a_handle);
 		void                  SetInventoryChanges(InventoryChanges* a_changes);
-		void                  SetLinkedRef(TESObjectREFR* a_targetRef, BGSKeyword* a_keyword);
 		void                  SetOwner(TESForm* a_owner);
 
 	private:
-		[[nodiscard]] BSExtraData*     GetByTypeImpl(ExtraDataType a_type) const;
-		void                           MarkType(std::uint32_t a_type, bool a_cleared);
-		void                           MarkType(ExtraDataType a_type, bool a_cleared);
+		[[nodiscard]] BSExtraData* GetByTypeImpl(ExtraDataType a_type) const;
+		void         MarkType(std::uint32_t a_type, bool a_cleared);
+		void         MarkType(ExtraDataType a_type, bool a_cleared);
 		[[nodiscard]] BSReadWriteLock& GetLock() const noexcept;
 
 		// members
-		BaseExtraList _extraData;  // 00
+		BaseExtraList           _extraData;  // 00
 #ifndef ENABLE_SKYRIM_AE
-		mutable BSReadWriteLock _lock;  // 10, 18; offset 18 only for AE versions .629 and later.
+		mutable BSReadWriteLock _lock;       // 10, 18; offset 18 only for AE versions .629 and later.
 #endif
 	};
 }
