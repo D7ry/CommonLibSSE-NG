@@ -13,7 +13,7 @@ namespace RE
 		GetWornMaskVisitor(Actor* a_actor) :
 			actor{ a_actor } {}
 
-		bool Visit(InventoryEntryData* a_entryData) override;  // 01
+		BSContainer::ForEachResult Visit(InventoryEntryData* a_entryData) override;  // 01
 
 		// members
 		stl::enumeration<BipedObjectSlot, std::uint32_t> slotMask;

@@ -4,7 +4,7 @@
 
 namespace RE
 {
-	bool GetWornMaskVisitor::Visit(InventoryEntryData* a_entryData)
+	BSContainer::ForEachResult GetWornMaskVisitor::Visit(InventoryEntryData* a_entryData)
 	{
 		using func_t = decltype(&GetWornMaskVisitor::Visit);
 		static REL::Relocation<func_t> func{ RELOCATION_ID(15991, 16233) };

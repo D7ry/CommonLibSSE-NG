@@ -670,7 +670,7 @@ namespace SKSE
 
 				return utf8_to_utf16(
 					fmt::format(
-						"{}({}): {}"sv,
+						"{}({}): {}",
 						filename,
 						a_loc.line(),
 						a_msg))

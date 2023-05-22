@@ -350,7 +350,6 @@ namespace RE
 
 		// override (MagicTarget)
 #ifndef ENABLE_SKYRIM_AE
-#ifndef ENABLE_SKYRIM_AE
 		[[nodiscard]] Actor*                       GetTargetStatsObject() override;      // 002 - { return this; }
 		[[nodiscard]] bool                         MagicTargetIsActor() const override;  // 003 - { return true; }
 		[[nodiscard]] BSSimpleList<ActiveEffect*>* GetActiveEffectList() override;       // 007
@@ -593,9 +592,8 @@ namespace RE
 		[[nodiscard]] bool                      IsHostileToActor(Actor* a_actor);
 		[[nodiscard]] bool                      IsLeveled() const;
 		[[nodiscard]] bool                      IsInCastPowerList(SpellItem* a_power);
-		[[nodiscard]] bool                      IsMoving() const;
 		[[nodiscard]] bool                      IsInJumpState() const;
-		[[nodiscard]] constexpr bool            IsInKillMove() const noexcept { return GetActorRuntimeData().GetActorRuntimeData().boolFlags.all(BOOL_FLAGS::kIsInKillMove); }
+		[[nodiscard]] constexpr bool            IsInKillMove() const noexcept { return GetActorRuntimeData().boolFlags.all(BOOL_FLAGS::kIsInKillMove); }
 		[[nodiscard]] bool                      IsInMidair() const;
 		[[nodiscard]] bool                      IsInRagdollState() const;
 		[[nodiscard]] bool                      IsLimbGone(std::uint32_t a_limb);
@@ -776,9 +774,6 @@ namespace RE
 #ifndef ENABLE_SKYRIM_AE
 		RUNTIME_DATA_CONTENT
 #endif
-#ifndef ENABLE_SKYRIM_AE
-		RUNTIME_DATA_CONTENT
-#endif
 
 	private:
 		void        CalculateCurrentVendorFaction() const;
@@ -786,10 +781,7 @@ namespace RE
 		TESFaction* GetCrimeFactionImpl() const;
 	};
 #ifndef ENABLE_SKYRIM_AE
-#ifndef ENABLE_SKYRIM_AE
 	static_assert(sizeof(Actor) == 0x2B0);
 #endif
-#endif
 }
-#undef RUNTIME_DATA_CONTENT
 #undef RUNTIME_DATA_CONTENT

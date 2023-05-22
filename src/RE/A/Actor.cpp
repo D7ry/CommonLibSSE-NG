@@ -893,11 +893,6 @@ namespace RE
 		return GetActorRuntimeData().boolFlags.all(BOOL_FLAGS::kProtected);
 	}
 
-	bool Actor::IsProtected() const
-	{
-		return GetActorRuntimeData().boolFlags.all(BOOL_FLAGS::kProtected);
-	}
-
 	bool Actor::IsRunning() const
 	{
 		using func_t = decltype(&Actor::IsRunning);
@@ -928,7 +923,7 @@ namespace RE
 		if (this->GetGraphVariableBool("IsStaggering", result) && result)
 			return result;
 
-		return static_cast<bool>(actorState2.staggered);
+		return static_cast<bool>(AsActorState()->actorState2.staggered);
 	}
 
 	bool Actor::IsSummoned() const noexcept

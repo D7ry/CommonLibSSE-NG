@@ -11,6 +11,7 @@
 #include "RE/E/ExtraOwnership.h"
 #include "RE/E/ExtraReferenceHandle.h"
 #include "RE/E/ExtraSoul.h"
+#include "RE/E/ExtraTeleport.h"
 #include "RE/E/ExtraTextDisplayData.h"
 #include "RE/G/GameSettingCollection.h"
 #include "RE/T/TESBoundObject.h"

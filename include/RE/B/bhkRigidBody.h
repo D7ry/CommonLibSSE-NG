@@ -2,6 +2,8 @@
 
 #include "RE/B/BSTArray.h"
 #include "RE/B/bhkEntity.h"
+#include "RE/H/hkQuaternion.h"
+#include "RE/H/hkVector4.h"
 
 namespace RE
 {
@@ -18,7 +20,7 @@ namespace RE
 
 		~bhkRigidBody() override;  // 00
 
-		// override (bhkEntity)
+		// override (bhkEntity)inventoryentry
 		const NiRTTI* GetRTTI() const override;                           // 02
 		bhkRigidBody* AsBhkRigidBody() override;                          // 15 - { return this; }
 		NiObject*     CreateClone(NiCloningProcess& a_cloning) override;  // 17

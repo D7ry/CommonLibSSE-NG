@@ -28,7 +28,7 @@ set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CAC
 project(
 	CommonLibSSE
 	LANGUAGES CXX
-	VERSION 3.6.0
+	VERSION 3.7.0
 )
 
 include(GNUInstallDirs)
@@ -117,12 +117,6 @@ target_include_directories(
 	PUBLIC
 		"$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
 		"$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
-)
-
-target_include_directories(
-	"${PROJECT_NAME}"
-	PRIVATE
-		${FAST_CPP_CSV_PARSER_INCLUDE_DIRS}
 )
 
 target_link_libraries(

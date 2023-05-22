@@ -43,7 +43,7 @@ namespace RE
 	{
 		bool result = false;
 		ForEachKeyword([&](const BGSKeyword& a_keyword) {
-			if (stl::string::icontains(a_keyword.formEditorID, a_editorID)) {
+			if (a_keyword.formEditorID.contains(a_editorID)) {
 				result = true;
 				return BSContainer::ForEachResult::kStop;
 			}

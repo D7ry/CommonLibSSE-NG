@@ -77,34 +77,6 @@ namespace RE
 			return REL::RelocateMemberIfNewer<HAZARD_RUNTIME_DATA>(SKSE::RUNTIME_SSE_1_6_629, this, 0x98, 0xA0);
 		}
 
-		struct HAZARD_RUNTIME_DATA
-		{
-#define HAZARD_RUNTIME_DATA_CONTENT                                     \
-	void*                                  hazardDBHandle; /* 98, A0 */ \
-	ActorHandle                            ownerActor;     /* A0 */     \
-	float                                  age;            /* A4 */     \
-	float                                  lifetime;       /* A8 */     \
-	float                                  targetTimer;    /* AC */     \
-	float                                  radius;         /* B0 */     \
-	float                                  magnitude;      /* B4 */     \
-	BGSHazard*                             hazard;         /* B8 */     \
-	NiPointer<NiLight>                     light;          /* C0 */     \
-	BSSoundHandle                          sound;          /* C8 */     \
-	stl::enumeration<Flags, std::uint32_t> flags;          /* D4 */
-
-			HAZARD_RUNTIME_DATA_CONTENT
-		};
-
-		[[nodiscard]] inline HAZARD_RUNTIME_DATA& GetHazardRuntimeData() noexcept
-		{
-			return REL::RelocateMemberIfNewer<HAZARD_RUNTIME_DATA>(SKSE::RUNTIME_SSE_1_6_629, this, 0x98, 0xA0);
-		}
-
-		[[nodiscard]] inline const HAZARD_RUNTIME_DATA& GetHazardRuntimeData() const noexcept
-		{
-			return REL::RelocateMemberIfNewer<HAZARD_RUNTIME_DATA>(SKSE::RUNTIME_SSE_1_6_629, this, 0x98, 0xA0);
-		}
-
 		// members
 #ifndef ENABLE_SKYRIM_AE
 		HAZARD_RUNTIME_DATA_CONTENT

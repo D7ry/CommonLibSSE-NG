@@ -28,5 +28,5 @@ namespace RE
 		TESIdleForm*  IdleForm;        // 50
 		uint64_t      unk58;           // 58
 	};
-	static_assert(sizeof(BGSActionData) == 0x60);
+	static_assert(sizeof(BGSActionData) == 0x90);
 }

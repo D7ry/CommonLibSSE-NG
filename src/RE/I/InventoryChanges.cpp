@@ -20,13 +20,6 @@ namespace RE
 		stl::memzero(this);
 	}
 
-	void InventoryChanges::Accept(IItemChangeVisitor* a_visitor)
-	{
-		using func_t = decltype(&InventoryChanges::Accept);
-		static REL::Relocation<func_t> func{ RELOCATION_ID(15856, 16096) };
-		return func(this, a_visitor);
-	}
-
 	void InventoryChanges::AddEntryData(InventoryEntryData* a_entry)
 	{
 		if (!entryList) {
