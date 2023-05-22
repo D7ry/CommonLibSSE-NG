@@ -89,6 +89,8 @@ namespace RE
 				kFormRetainsID = 1 << 22,
 				kDestroyed = 1 << 23,
 
+				kUnk24 = 1 << 24,
+
 				kNoAIAcquire = 1 << 25,
 				kObstacle = 1 << 25,
 
@@ -309,7 +311,7 @@ namespace RE
 
 		template <class... Args>
 		[[nodiscard]] bool Is(Args... a_args) const noexcept  //
-			requires(std::same_as<Args, FormType>&&...)
+			requires(std::same_as<Args, FormType> && ...)
 		{
 			return (Is(a_args) || ...);
 		}
@@ -330,7 +332,7 @@ namespace RE
 
 		template <class... Args>
 		[[nodiscard]] bool IsNot(Args... a_args) const noexcept  //
-			requires(std::same_as<Args, FormType>&&...)
+			requires(std::same_as<Args, FormType> && ...)
 		{
 			return (IsNot(a_args) && ...);
 		}

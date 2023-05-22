@@ -9,10 +9,6 @@
 #include "SKSE/Impl/Stubs.h"
 #include "SKSE/Version.h"
 
-#include <Windows.h>
-
-EXTERN_C IMAGE_DOS_HEADER __ImageBase;
-
 namespace SKSE
 {
 	struct PluginInfo;
@@ -518,7 +514,8 @@ namespace SKSE
 			constexpr RuntimeCompatibility() = default;
 
 			template <class... Args>
-			requires(sizeof...(Args) <= MaxCompatibleVersions && (std::convertible_to<Args, VersionNumber> && ...)) constexpr RuntimeCompatibility(Args... a_compatibleVersions) noexcept :
+				requires(sizeof...(Args) <= MaxCompatibleVersions && (std::convertible_to<Args, VersionNumber> && ...))
+			constexpr RuntimeCompatibility(Args... a_compatibleVersions) noexcept :
 				_addressLibrary(false), _compatibleVersions({ VersionNumber(a_compatibleVersions)... })
 			{
 			}
@@ -660,10 +657,7 @@ namespace SKSE
 			return _data.MinimumSKSEVersion;
 		}
 
-		[[nodiscard]] static inline const PluginDeclaration* GetSingleton() noexcept
-		{
-			return reinterpret_cast<const PluginDeclaration*>(GetProcAddress(reinterpret_cast<HMODULE>(&__ImageBase), "SKSEPlugin_Version"));
-		}
+		[[nodiscard]] static const PluginDeclaration* GetSingleton() noexcept;
 
 	private:
 		enum

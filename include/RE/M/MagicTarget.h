@@ -1,5 +1,6 @@
 #pragma once
 
+#include "RE/B/BSContainer.h"
 #include "RE/B/BSPointerHandle.h"
 #include "RE/B/BSTEvent.h"
 #include "RE/B/BSTList.h"
@@ -12,6 +13,7 @@ namespace RE
 {
 	class Actor;
 	class ActiveEffect;
+	class BGSKeyword;
 	class EffectItem;
 	class EffectSetting;
 	class MagicItem;
@@ -24,6 +26,7 @@ namespace RE
 	{
 	public:
 		inline static constexpr auto RTTI = RTTI_MagicTarget;
+		inline static constexpr auto VTABLE = VTABLE_MagicTarget;
 
 		using Archetype = EffectArchetypes::ArchetypeID;
 
@@ -31,8 +34,9 @@ namespace RE
 		{
 		public:
 			inline static constexpr auto RTTI = RTTI_MagicTarget__ForEachActiveEffectVisitor;
+			inline static constexpr auto VTABLE = VTABLE_MagicTarget__ForEachActiveEffectVisitor;
 
-			virtual ~ForEachActiveEffectVisitor();  // 00
+			virtual ~ForEachActiveEffectVisitor(){};  // 00
 
 			// add
 			virtual BSContainer::ForEachResult Accept(ActiveEffect* a_effect) = 0;  // 01
@@ -87,6 +91,8 @@ namespace RE
 		void DispelEffectsWithArchetype(Archetype a_type, bool a_force);
 		bool HasEffectWithArchetype(Archetype a_type);
 		bool HasMagicEffect(EffectSetting* a_effect);
+		bool HasMagicEffectWithKeyword(BGSKeyword* a_keyword, std::uint64_t a_arg2);
+		void VisitEffects(ForEachActiveEffectVisitor& visitor);
 
 		// members
 		SpellDispelData* postUpdateDispelList;  // 08

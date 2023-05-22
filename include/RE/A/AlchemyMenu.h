@@ -61,8 +61,8 @@ namespace RE::CraftingSubMenus
 		~AlchemyMenu() override;  // 00
 
 		// override (CraftingSubMenu)
-		void Accept(CallbackProcessor* a_cbReg) override;  // 01
-		void Unk_05(void) override;                        // 05
+		void Accept(CallbackProcessor* a_cbReg) override;          // 01
+		bool ProcessUserEvent(BSFixedString* a_control) override;  // 05
 
 		// members
 		RE::BSTArray<MenuIngredientEntry> ingredientsEntries;       // 100

@@ -2,6 +2,7 @@
 
 #include "RE/B/BSAtomic.h"
 #include "RE/B/BSBitField.h"
+#include "RE/B/BSContainer.h"
 #include "RE/B/BSMultiBoundNode.h"
 #include "RE/B/BSPointerHandle.h"
 #include "RE/B/BSTArray.h"
@@ -21,6 +22,8 @@
 
 namespace RE
 {
+	class TESRegionList;
+
 	namespace BGSWaterCollisionManager
 	{
 		class BGSWaterUpdateI;
@@ -203,6 +206,7 @@ namespace RE
 		[[nodiscard]] float                 GetNorthRotation();
 		[[nodiscard]] TESForm*              GetOwner();
 		[[nodiscard]] float                 GetExteriorWaterHeight() const;
+		[[nodiscard]] TESRegionList*        GetRegionList(bool a_createIfMissing);
 		bool                                GetWaterHeight(const NiPoint3& a_pos, float& a_waterHeight);
 		[[nodiscard]] bool                  IsAttached() const;
 		[[nodiscard]] bool                  IsExteriorCell() const;

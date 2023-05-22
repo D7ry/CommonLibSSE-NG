@@ -1,5 +1,6 @@
 #pragma once
 
+#include "RE/B/BGSDefaultObjectManager.h"
 #include "RE/B/BSPointerHandle.h"
 #include "RE/B/BSSoundHandle.h"
 #include "RE/B/BSTArray.h"
@@ -16,6 +17,8 @@
 #include "RE/N/NiSmartPointer.h"
 #include "RE/N/NiTMap.h"
 #include "RE/P/PositionPlayerEvent.h"
+#include "RE/T/TESObjectWEAP.h"
+#include "RE/T/TESQuest.h"
 
 namespace RE
 {
@@ -224,6 +227,7 @@ namespace RE
 	static_assert(sizeof(PlayerActionObject) == 0xC);
 
 	class PlayerCharacter :
+#ifndef ENABLE_SKYRIM_AE
 		public Character,                            // 000
 		public BSTEventSource<BGSActorCellEvent>,    // 2D0
 		public BSTEventSource<BGSActorDeathEvent>,   // 328
@@ -232,6 +236,9 @@ namespace RE
 		public BSTEventSink<MenuModeChangeEvent>,    // 2B8
 		public BSTEventSink<UserEventEnabledEvent>,  // 2C0
 		public BSTEventSink<TESTrackedStatsEvent>    // 2C8
+#else
+		public Character  // 000
+#endif
 	{
 	public:
 		inline static constexpr auto RTTI = RTTI_PlayerCharacter;
@@ -258,49 +265,111 @@ namespace RE
 			kHandsBound = 1 << 2
 		};
 
-		enum class FlagBD9
+		struct PlayerFlags
 		{
-			kNone = 0,
-			kIsSleeping = 1 << 2,
-			kGreetingPlayer = 1 << 6
+			// members
+			bool          travelUseDoor: 1;                  // 0:0 - Guess from FO4 given matching logic for Character::WarpFollowers
+			bool          fastTraveling: 1;                  // 0:1 - Set and cleared in the same fast travel function
+			bool          overAutoAimTarget: 1;              // 0:2 - Crosshair over hostile actor AND equipped WEAPON_TYPE bow, staff, or crossbow, must have weapon out to be accurate
+			bool          showQuestItems: 1;                 // 0:3 - Not used by game, confirmed with console command `SetShowQuestItems`
+			bool          unk0_4: 1;                         // 0:4 - Unused?
+			bool          hasQueuedEquipAnim: 1;             // 0:5 - Set true in `OnItemEquipped` if a_playAnim && isPaused, false once out of menu
+			bool          escaping: 1;                       // 0:6 - Is Escaping from jail
+			bool          forceQuestTargetRepath: 1;         // 0:7 - Updates quest target in compass
+			bool          unk1_0: 1;                         // 1:0
+			bool          unk1_1: 1;                         // 1:1
+			bool          sleeping: 1;                       // 1:2
+			bool          unk1_3: 1;                         // 1:3
+			bool          unk1_4: 1;                         // 1:4
+			bool          unk1_5: 1;                         // 1:5
+			bool          greetingPlayer: 1;                 // 1:6 - NPC greeting player
+			bool          unk1_7: 1;                         // 1:7
+			bool          unk2_0: 1;                         // 2:0
+			bool          aiControlledToPos: 1;              // 2:1 - Guess from FO4, confirmed aiControlled related
+			bool          aiControlledFromPos: 1;            // 2:2 - Guess from FO4, confirmed aiControlled related
+			bool          aiControlledPackage: 1;            // 2:3 - Guess from FO4, confirmed aiControlled related
+			bool          returnToLastKnownGoodPosition: 1;  // 2:4 - return to lastKnownGoodPosition on next Update
+			bool          isBeingChased: 1;                  // 2:5 - unused along with chaseTimer
+			bool          unk2_6: 1;                         // 2:6
+			bool          unk2_7: 1;                         // 2:7
+			bool          isInThirdPersonMode: 1;            // 3:0
+			bool          unk3_1: 1;                         // 3:1
+			bool          unk3_2: 1;                         // 3:2
+			bool          unk3_3: 1;                         // 3:3
+			bool          target3DDistant: 1;                // 3:4 - Distance from object in crosshair > 1000
+			bool          isInCombat: 1;                     // 3:5
+			bool          attemptedYieldInCurrentCombat: 1;  // 3:6 - Set when yielding to guard for arrest dialogue, prevents multiple arrest dialogues
+			bool          unk3_7: 1;                         // 3:7
+			bool          isLoading: 1;                      // 4:0 - Is player loading a new area
+			bool          shouldUpdateCrosshair: 1;          // 4:1 - If forced off without letting Skyrim update this, crosshair UI won't update,
+			bool          unk4_2: 1;                         // 4:2
+			bool          healthTutorialShown: 1;            // 4:3
+			bool          magickaTutorialShown: 1;           // 4:4
+			bool          staminaTutorialShown: 1;           // 4:5
+			bool          goToJailQueued: 1;                 // 4:6 - Briefly set
+			bool          unk4_7: 1;                         // 4:7
+			bool          isSprinting: 1;                    // 5:0
+			bool          isSungazing: 1;                    // 5:1 - Is staring at the sun
+			bool          dragonRideTargetLocked: 1;         // 5:2
+			bool          everModded: 1;                     // 5:3
+			bool          servingJailTime: 1;                // 5:4 - Briefly set
+			bool          pad5_5: 3;                         // 5:5
+			std::uint16_t pad6;                              // 6
 		};
+		static_assert(sizeof(PlayerFlags) == 0x8);
 
-		enum class FlagBDB
-		{
-			kNone = 0,
-			kIsInThirdPersonMode = 1 << 0,
-			kIsInCombat = 1 << 5
-		};
-
-		enum class FlagBDC
-		{
-			kNone = 0,
-			kHealthTutorialShown = 1 << 3,
-			kMagickaTutorialShown = 1 << 4,
-			kStaminaTutorialShown = 1 << 5,
-			kGoToJailQueued = 1 << 6
-		};
-
-		enum class FlagBDD
-		{
-			kNone = 0,
-			kSprinting = 1 << 0,
-			kDragonRideTargetLocked = 1 << 2,
-			kEverModded = 1 << 3,
-			kServingJailTime = 1 << 4
-		};
-
-		struct Data928
+		struct QueuedWeapon
 		{
 		public:
 			// members
-			BSTArray<UnkValue> unk00;  // 00
-			BSTArray<UnkValue> unk18;  // 18
-			std::uint64_t      unk30;  // 30
-			std::uint64_t      unk38;  // 38
-			std::uint64_t      unk40;  // 40
+			TESObjectWEAP* rightHandWeapon;  // 00
+			TESObjectWEAP* leftHandWeapon;   // 08
 		};
-		static_assert(sizeof(Data928) == 0x48);
+		static_assert(sizeof(QueuedWeapon) == 0x10);
+
+		struct TeleportPath  // TODO: Should not be in Player class. Gets used in Pathing and other non-player areas
+		{
+		public:
+			struct Unk00Data
+			{
+			public:
+				// members
+				bool           unk00;         // 00 - Determines whether to use worldspace or cell?
+				char           pad01[7];      // 01
+				TESWorldSpace* worldspace;    // 08
+				TESObjectCELL* interiorCell;  // 10
+			};
+			static_assert(sizeof(Unk00Data) == 0x18);
+
+			struct Unk18Data
+			{
+			public:
+				// members
+				RE::TESObjectREFR* unk00;  // 00
+				std::uint64_t      unk08;  // 08
+				std::uint64_t      unk10;  // 10
+			};
+			static_assert(sizeof(Unk18Data) == 0x18);
+
+			// members
+			BSTArray<Unk00Data> unk00;  // 00
+			BSTArray<Unk18Data> unk18;  // 18
+			std::uint64_t       unk30;  // 30
+			std::uint64_t       unk38;  // 38
+			std::uint64_t       unk40;  // 40
+		};
+		static_assert(sizeof(TeleportPath) == 0x48);
+
+		struct PreTransformationData
+		{
+		public:
+			// members
+			MagicItem*      storedSelectedSpells[4];    // 00
+			TESRace*        storedRace;                 // 20
+			TESForm*        storedSelectedPower;        // 28
+			TESBoundObject* storedLastOneHandItems[2];  // 30
+		};
+		static_assert(sizeof(PreTransformationData) == 0x40);
 
 		struct CrimeValue
 		{
@@ -416,8 +485,8 @@ namespace RE
 	ActorHandle                lightTarget;                                 /* 048 */ \
 	float                      sortActorDistanceTimer;                      /* 04C */ \
 	float                      sitHeadingDelta;                             /* 050 */ \
-	ObjectRefHandle            unk054;                                      /* 054 */ \
-	Data928*                   unk058;                                      /* 058 */ \
+	ObjectRefHandle            playerMapMarker;                             /* 054 */ \
+	TeleportPath*              playerMarkerPath;                            /* 058 */ \
 	std::uint32_t              skillTrainingsThisLevel;                     /* 060 */ \
 	std::uint32_t              unk064;                                      /* 064 */ \
 	TESClass*                  defaultClass;                                /* 068 */ \
@@ -443,7 +512,7 @@ namespace RE
 	NiPointer<NiAVObject>      targeted3D;                                  /* 0F8 */ \
 	CombatGroup*               combatGroup;                                 /* 100 */ \
 	BSTArray<ActorHandle>      actorsToDisplayOnTheHUDArray;                /* 108 */ \
-	std::uint64_t              unk120;                                      /* 120 */ \
+	TESForm*                   advanceObject;                               /* 120 */ \
 	TESBoundObject*            lastOneHandItems[2];                         /* 128 */ \
 	std::uint32_t              teammateCount;                               /* 138 */ \
 	float                      combatTimer;                                 /* 13C */ \
@@ -458,6 +527,9 @@ namespace RE
 
 		~PlayerCharacter() override;  // 000
 
+		// override
+		void RemoveWeapon(BIPED_OBJECT equipIndex) override;  // 082
+
 		// add
 		SKYRIM_REL_VR_VIRTUAL void          Unk_12A(void);                                                                 // 12A
 		[[nodiscard]] SKYRIM_REL_VR_VIRTUAL std::uint32_t GetViolentCrimeGoldValue(const TESFaction* a_faction) const;     // 12B
@@ -466,13 +538,19 @@ namespace RE
 		SKYRIM_REL_VR_VIRTUAL void                        Unk_12E(void);                                                   // 12E - { return 0; }
 
 		static PlayerCharacter* GetSingleton();
+		static bool             IsGodMode();
 
-		void                                   ActivatePickRef();
-		void                                   AddPlayerAddItemEvent(TESObject* a_object, TESForm* a_owner, TESObjectREFR* a_container, AQUIRE_TYPE a_type);
-		void                                   AddSkillExperience(ActorValue a_skill, float a_experience);
-		bool                                   AttemptPickpocket(TESObjectREFR* a_containerRef, InventoryEntryData* a_entry, std::int32_t a_number, bool a_fromContainer = true);
-		bool                                   CenterOnCell(const char* a_cellName);
-		bool                                   CenterOnCell(RE::TESObjectCELL* a_cell);
+		void ActivatePickRef();
+		void AddPlayerAddItemEvent(TESObject* a_object, TESForm* a_owner, TESObjectREFR* a_container, AQUIRE_TYPE a_type);
+		void AddSkillExperience(ActorValue a_skill, float a_experience);
+		bool AttemptPickpocket(TESObjectREFR* a_containerRef, InventoryEntryData* a_entry, std::int32_t a_number, bool a_fromContainer = true);
+		bool CenterOnCell(const char* a_cellName);
+		bool CenterOnCell(TESObjectCELL* a_cell);
+		bool CheckCast(MagicItem* a_spell, Effect* a_effect, MagicSystem::CannotCastReason& a_reason);
+		void DestroyMouseSprings();
+#ifndef ENABLE_SKYRIM_VR
+		void EndGrabObject();
+#endif
 		[[nodiscard]] NiPointer<Actor>         GetActorDoingPlayerCommand() const;
 		[[nodiscard]] float                    GetArmorValue(InventoryEntryData* a_form);
 		[[nodiscard]] float                    GetDamage(InventoryEntryData* a_form);
@@ -490,17 +568,76 @@ namespace RE
 		void                                   SetEscaping(bool a_flag, bool a_escaped);
 		void                                   SetGodMode(bool a_enable);
 		void                                   StartGrabObject();
+		void                                   UpdateCrosshairs();
 
-		template <class T>
-		inline BSTEventSource<T>* GetEventSource()
+		[[nodiscard]] inline BSTEventSource<BGSActorCellEvent>* AsBGSActorCellEventSource() noexcept
 		{
-			return static_cast<BSTEventSource<T>*>(this);
+			return &REL::RelocateMemberIfNewer<BSTEventSource<BGSActorCellEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2D0, 0x2D8);
 		}
 
-		template <class T>
-		inline void AddEventSink(BSTEventSink<T>* a_sink)
+		[[nodiscard]] inline const BSTEventSource<BGSActorCellEvent>* AsBGSActorCellEventSource() const noexcept
 		{
-			GetEventSource<T>()->AddEventSink(a_sink);
+			return &REL::RelocateMemberIfNewer<BSTEventSource<BGSActorCellEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2D0, 0x2D8);
+		}
+
+		[[nodiscard]] inline BSTEventSource<BGSActorDeathEvent>* AsBGSActorDeathEventSource() noexcept
+		{
+			return &REL::RelocateMemberIfNewer<BSTEventSource<BGSActorDeathEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x328, 0x330);
+		}
+
+		[[nodiscard]] inline const BSTEventSource<BGSActorDeathEvent>* AsBGSActorDeathEventSource() const noexcept
+		{
+			return &REL::RelocateMemberIfNewer<BSTEventSource<BGSActorDeathEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2D0, 0x330);
+		}
+
+		[[nodiscard]] inline BSTEventSource<PositionPlayerEvent>* AsPositionPlayerEventSource() noexcept
+		{
+			return &REL::RelocateMemberIfNewer<BSTEventSource<PositionPlayerEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x380, 0x388);
+		}
+
+		[[nodiscard]] inline const BSTEventSource<PositionPlayerEvent>* AsPositionPlayerEventSource() const noexcept
+		{
+			return &REL::RelocateMemberIfNewer<BSTEventSource<PositionPlayerEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x380, 0x388);
+		}
+
+		[[nodiscard]] inline BSTEventSink<MenuOpenCloseEvent>* AsMenuOpenCloseEventSink() noexcept
+		{
+			return &REL::RelocateMemberIfNewer<BSTEventSink<MenuOpenCloseEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2B0, 0x2B8);
+		}
+
+		[[nodiscard]] inline const BSTEventSink<MenuOpenCloseEvent>* AsMenuOpenCloseEventSink() const noexcept
+		{
+			return &REL::RelocateMemberIfNewer<BSTEventSink<MenuOpenCloseEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2B0, 0x2B8);
+		}
+
+		[[nodiscard]] inline BSTEventSink<MenuModeChangeEvent>* AsMenuModeChangeEventSink() noexcept
+		{
+			return &REL::RelocateMemberIfNewer<BSTEventSink<MenuModeChangeEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2B8, 0x2C0);
+		}
+
+		[[nodiscard]] inline const BSTEventSink<MenuModeChangeEvent>* AsMenuModeChangeEventSink() const noexcept
+		{
+			return &REL::RelocateMemberIfNewer<BSTEventSink<MenuModeChangeEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2B8, 0x2C0);
+		}
+
+		[[nodiscard]] inline BSTEventSink<UserEventEnabledEvent>* AsUserEventEnabledEventSink() noexcept
+		{
+			return &REL::RelocateMemberIfNewer<BSTEventSink<UserEventEnabledEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2C0, 0x2C8);
+		}
+
+		[[nodiscard]] inline const BSTEventSink<UserEventEnabledEvent>* AsUserEventEnabledEventSink() const noexcept
+		{
+			return &REL::RelocateMemberIfNewer<BSTEventSink<UserEventEnabledEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2C0, 0x2C8);
+		}
+
+		[[nodiscard]] inline BSTEventSink<TESTrackedStatsEvent>* AsTESTrackedStatsEventSink() noexcept
+		{
+			return &REL::RelocateMemberIfNewer<BSTEventSink<TESTrackedStatsEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2C8, 0x2D0);
+		}
+
+		[[nodiscard]] inline const BSTEventSink<TESTrackedStatsEvent>* AsTESTrackedStatsEventSink() const noexcept
+		{
+			return &REL::RelocateMemberIfNewer<BSTEventSink<TESTrackedStatsEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2C8, 0x2D0);
 		}
 
 		struct PLAYER_RUNTIME_DATA

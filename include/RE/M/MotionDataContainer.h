@@ -1,9 +1,14 @@
 #pragma once
 
-//#include <half>
+#include <external/half.hpp>
+
+#include "RE/N/NiPoint3.h"
+#include "RE/N/NiQuaternion.h"
 
 namespace RE
 {
+	using half = half_float::half;
+
 	class MotionDataContainer
 	{
 	public:

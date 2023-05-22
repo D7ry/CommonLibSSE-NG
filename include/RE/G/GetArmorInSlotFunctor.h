@@ -13,7 +13,7 @@ namespace RE
 		virtual ~GetArmorInSlotFunctor();  // 00
 
 		// override (InventoryChanges::IItemChangeVisitor)
-		bool Visit(InventoryEntryData* a_entryData) override;  // 01
+		BSContainer::ForEachResult Visit(InventoryEntryData* a_entryData) override;  // 01
 
 		// members
 		std::uint32_t                    slot;

@@ -1,6 +1,13 @@
 /build*
 CMakeUserPresets.json
+CMakeFiles
+CMakeCache.txt
+CMakeLists.txt.disabled
+*.cmake
 /out*
 /.vs*
 /.idea
-CMakeLists.txt.disabled
+conan.lock
+conanbuildinfo.*
+conaninfo.txt
+graph_info.json

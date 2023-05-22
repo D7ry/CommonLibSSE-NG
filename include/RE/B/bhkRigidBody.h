@@ -2,9 +2,16 @@
 
 #include "RE/B/BSTArray.h"
 #include "RE/B/bhkEntity.h"
+#include "RE/H/hkQuaternion.h"
+#include "RE/H/hkVector4.h"
 
 namespace RE
 {
+	class hkAabb;
+	class hkTransform;
+	class hkQuaternion;
+	class hkVector4;
+
 	class bhkRigidBody : public bhkEntity
 	{
 	public:
@@ -13,7 +20,7 @@ namespace RE
 
 		~bhkRigidBody() override;  // 00
 
-		// override (bhkEntity)
+		// override (bhkEntity)inventoryentry
 		const NiRTTI* GetRTTI() const override;                           // 02
 		bhkRigidBody* AsBhkRigidBody() override;                          // 15 - { return this; }
 		NiObject*     CreateClone(NiCloningProcess& a_cloning) override;  // 17
@@ -43,6 +50,11 @@ namespace RE
 		virtual void GetTransform(hkTransform& a_outTransform);                                // 3A
 		virtual void GetAabbWorldspace(hkAabb& a_outAabb);                                     // 3B
 		virtual void Unk_3C(void);                                                             // 3C
+
+		void SetAngularImpulse(const hkVector4& a_impulse);
+		void SetAngularVelocity(const hkVector4& a_newVel);
+		void SetLinearImpulse(const hkVector4& a_impulse);
+		void SetLinearVelocity(const hkVector4& a_newVel);
 
 		// members
 		BSTArray<void*> unk28;  // 28 - array of smart ptrs to bhkConstraints
