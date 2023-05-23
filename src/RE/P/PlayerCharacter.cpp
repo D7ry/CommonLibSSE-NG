@@ -185,12 +185,6 @@ namespace RE
 		}
 	}
 
-	bool PlayerCharacter::IsGodMode() const
-	{
-		static REL::Relocation<bool*> isGodMode{ RELOCATION_ID(517711, 404238) };
-		return *isGodMode;
-	}
-
 	void PlayerCharacter::PlayPickupEvent(TESForm* a_item, TESForm* a_containerOwner, TESObjectREFR* a_containerRef, EventType a_eventType)
 	{
 		using func_t = decltype(&PlayerCharacter::PlayPickupEvent);
