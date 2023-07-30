@@ -15,6 +15,13 @@ namespace RE
 		return func(this, a_objDesc);
 	}
 
+	void Inventory3DManager::PrepareRender()
+	{
+		using func_t = decltype(&Inventory3DManager::PrepareRender);
+		REL::Relocation<func_t> func{ RELOCATION_ID(50883, 51756) };  //SE: 140887810
+		return func(this);
+	}
+
 	void Inventory3DManager::UpdateMagic3D(TESForm* a_form, std::uint32_t a_arg2)
 	{
 		using func_t = decltype(&Inventory3DManager::UpdateMagic3D);

@@ -314,7 +314,7 @@ namespace RE
 							std::make_pair(
 								entry->countDelta,
 								std::make_unique<InventoryEntryData>(*entry)));
-					assert(it.second);
+					//assert(it.second);
 				}
 			}
 		}

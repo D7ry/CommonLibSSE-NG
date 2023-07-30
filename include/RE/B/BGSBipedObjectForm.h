@@ -81,6 +81,7 @@ namespace RE
 		[[nodiscard]] bool            IsHeavyArmor() const;
 		[[nodiscard]] bool            IsLightArmor() const;
 		[[nodiscard]] bool            IsShield() const;
+		[[]]
 		BipedObjectSlot               RemoveSlotFromMask(BipedObjectSlot a_slot);
 		void                          SetSlotMask(BipedObjectSlot a_mask);
 

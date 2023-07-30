@@ -23,6 +23,6 @@ namespace RE
 	float    GetSecondsSinceLastFrame();
 	bool     LookupReferenceByHandle(const RefHandle& a_handle, NiPointer<Actor>& a_refrOut);
 	bool     LookupReferenceByHandle(const RefHandle& a_handle, NiPointer<TESObjectREFR>& a_refrOut);
-	void     PlaySound(const char* a_editorID);
+	void     PlaySoundRE(const char* a_editorID);
 	void     ShakeCamera(float a_strength, const NiPoint3& a_position, float a_duration);
 }

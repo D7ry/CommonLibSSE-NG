@@ -135,7 +135,8 @@ namespace SKSE
 
 	std::uint32_t SerializationInterface::ReadRecordData(void* a_buf, std::uint32_t a_length) const
 	{
-		return GetProxy()->ReadRecordData(a_buf, a_length);
+		auto proxy = GetProxy();
+		return proxy->ReadRecordData(a_buf, a_length);
 	}
 
 	bool SerializationInterface::ResolveFormID(RE::FormID a_oldFormID, RE::FormID& a_newFormID) const
@@ -145,6 +146,7 @@ namespace SKSE
 
 	bool SerializationInterface::ResolveHandle(RE::VMHandle a_oldHandle, RE::VMHandle& a_newHandle) const
 	{
+		return GetProxy()->ResolveHandle(a_oldHandle, &a_newHandle);
 		return GetProxy()->ResolveHandle(a_oldHandle, &a_newHandle);
 	}
 

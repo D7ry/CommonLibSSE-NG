@@ -95,9 +95,9 @@ namespace RE
 		return LookupReferenceByHandle_RefrImpl(a_handle, a_refrOut);
 	}
 
-	void PlaySound(const char* a_editorID)
+	void PlaySoundRE(const char* a_editorID)
 	{
-		using func_t = decltype(&PlaySound);
+		using func_t = decltype(&PlaySoundRE);
 		REL::Relocation<func_t> func{ Offset::PlaySound };
 		return func(a_editorID);
 	}

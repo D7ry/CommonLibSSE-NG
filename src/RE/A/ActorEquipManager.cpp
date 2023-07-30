@@ -29,6 +29,21 @@ namespace RE
 		return func(this, a_actor, a_spell, a_slot);
 	}
 
+	// WARNING: this may not work
+	void ActorEquipManager::UnEquipSpell(Actor* a_actor, SpellItem* a_spell, int aiSource) //0->left 1->right 2->other
+	{
+		using func_t = decltype(&ActorEquipManager::UnEquipSpell);
+		REL::Relocation<func_t> func{ RELOCATION_ID(37947, 38903) };
+		return func(this, a_actor, a_spell, aiSource);
+	}
+
+	void ActorEquipManager::UnEquipShout(Actor* a_actor, TESShout* a_shout)
+	{
+		using func_t = decltype(&ActorEquipManager::UnEquipShout);
+		REL::Relocation<func_t> func{ RELOCATION_ID(37948, 38904) };
+		return func(this, a_actor, a_shout);
+	}
+
 	bool ActorEquipManager::UnequipObject(Actor* a_actor, TESBoundObject* a_object, ExtraDataList* a_extraData, std::uint32_t a_count, const BGSEquipSlot* a_slot, bool a_queueEquip, bool a_forceEquip, bool a_playSounds, bool a_applyNow, const BGSEquipSlot* a_slotToReplace)
 	{
 		using func_t = decltype(&ActorEquipManager::UnequipObject);
