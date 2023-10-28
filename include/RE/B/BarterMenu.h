@@ -17,6 +17,7 @@ namespace RE
 	{
 	public:
 		inline static constexpr auto      RTTI = RTTI_BarterMenu;
+		inline static constexpr auto      VTABLE = VTABLE_BarterMenu;
 		constexpr static std::string_view MENU_NAME = "BarterMenu";
 
 		struct RUNTIME_DATA
@@ -52,6 +53,7 @@ namespace RE
 		void               PostDisplay() override;                           // 06
 
 		[[nodiscard]] static RefHandle GetTargetRefHandle();
+		bool                           IsViewingVendorItems() noexcept;
 
 		[[nodiscard]] inline RUNTIME_DATA& GetRuntimeData() noexcept
 		{
