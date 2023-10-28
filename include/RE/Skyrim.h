@@ -331,6 +331,7 @@
 #include "RE/B/BSStream.h"
 #include "RE/B/BSString.h"
 #include "RE/B/BSStringPool.h"
+#include "RE/B/BSSynchronizedClipGenerator.h"
 #include "RE/B/BSSystemFile.h"
 #include "RE/B/BSSystemFileStorage.h"
 #include "RE/B/BSTAnimationGraphDataChannel.h"
