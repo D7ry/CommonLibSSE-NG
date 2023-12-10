@@ -41,5 +41,5 @@ namespace RE
 			return tesActionData;
 		}
 	};
-	static_assert(sizeof(TESActionData) == 0x90);
+	static_assert(sizeof(TESActionData) == 0x60);
 }
