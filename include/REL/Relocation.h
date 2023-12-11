@@ -194,6 +194,17 @@ namespace REL
 	}
 
 	inline constexpr std::uint8_t NOP = 0x90;
+	inline constexpr std::uint8_t NOP2[] = { 0x66, 0x90 };
+	inline constexpr std::uint8_t NOP3[] = { 0x0F, 0x1F, 0x00 };
+	inline constexpr std::uint8_t NOP4[] = { 0x0F, 0x1F, 0x40, 0x00 };
+	inline constexpr std::uint8_t NOP5[] = { 0x0F, 0x1F, 0x44, 0x00, 0x00 };
+	inline constexpr std::uint8_t NOP6[] = { 0x66, 0x0F, 0x1F, 0x44, 0x00, 0x00 };
+	inline constexpr std::uint8_t NOP7[] = { 0x0F, 0x1F, 0x80, 0x00, 0x00, 0x00, 0x00 };
+	inline constexpr std::uint8_t NOP8[] = { 0x0F, 0x1F, 0x84, 0x00, 0x00, 0x00, 0x00, 0x00 };
+	inline constexpr std::uint8_t NOP9[] = { 0x66, 0x0F, 0x1F, 0x84, 0x00, 0x00, 0x00, 0x00, 0x00 };
+
+	inline constexpr std::uint8_t JMP8 = 0xEB;
+	inline constexpr std::uint8_t JMP32 = 0xE9;
 	inline constexpr std::uint8_t RET = 0xC3;
 	inline constexpr std::uint8_t INT3 = 0xCC;
 
@@ -561,10 +572,10 @@ namespace REL
 			{
 				const mapping_t elem{ 0, a_offset };
 				const auto      it = std::lower_bound(
-                    _offset2id.begin(),
-                    _offset2id.end(),
-                    elem,
-                    [](auto&& a_lhs, auto&& a_rhs) {
+						 _offset2id.begin(),
+						 _offset2id.end(),
+						 elem,
+						 [](auto&& a_lhs, auto&& a_rhs) {
                         return a_lhs.offset < a_rhs.offset;
                     });
 				if (it == _offset2id.end()) {
@@ -708,19 +719,20 @@ namespace REL
 				auto mapname = L"CommonLibSSEOffsets-v2-"s;
 				mapname += a_version.wstring();
 				const auto byteSize = static_cast<std::size_t>(header.address_count()) * sizeof(mapping_t);
-				if (!_mmap.open(mapname, byteSize) &&
-					!_mmap.create(mapname, byteSize)) {
+				if (_mmap.open(mapname, byteSize)) {
+					_id2offset = { static_cast<mapping_t*>(_mmap.data()), header.address_count() };
+				} else if (_mmap.create(mapname, byteSize)) {
+					_id2offset = { static_cast<mapping_t*>(_mmap.data()), header.address_count() };
+					unpack_file(in, header);
+					std::sort(
+						_id2offset.begin(),
+						_id2offset.end(),
+						[](auto&& a_lhs, auto&& a_rhs) {
+							return a_lhs.id < a_rhs.id;
+						});
+				} else {
 					stl::report_and_fail("failed to create shared mapping"sv);
 				}
-
-				_id2offset = { static_cast<mapping_t*>(_mmap.data()), header.address_count() };
-				unpack_file(in, header);
-				std::sort(
-					_id2offset.begin(),
-					_id2offset.end(),
-					[](auto&& a_lhs, auto&& a_rhs) {
-						return a_lhs.id < a_rhs.id;
-					});
 			} catch (const std::system_error&) {
 				stl::report_and_fail(
 					fmt::format(
@@ -964,7 +976,7 @@ namespace REL
 			return write_vfunc(a_idx, stl::unrestricted_cast<std::uintptr_t>(a_newFunc));
 		}
 
-	private :
+	private:
 		// clang-format off
 		[[nodiscard]] static std::uintptr_t base() { return Module::get().base(); }
 		// clang-format on

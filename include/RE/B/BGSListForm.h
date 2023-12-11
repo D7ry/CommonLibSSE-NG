@@ -1,5 +1,6 @@
 #pragma once
 
+#include "RE/B/BSContainer.h"
 #include "RE/B/BSTArray.h"
 #include "RE/F/FormTypes.h"
 #include "RE/T/TESForm.h"
@@ -41,8 +42,9 @@ namespace RE
 		void InitItemImpl() override;                      // 13
 
 		void               AddForm(TESForm* a_form);
-		void               ForEachForm(std::function<bool(TESForm&)> a_callback) const;
-		bool               HasForm(const TESForm* a_form) const;
+		[[nodiscard]] bool ContainsOnlyType(FormType a_formType) const;
+		void               ForEachForm(std::function<BSContainer::ForEachResult(TESForm&)> a_callback) const;
+		[[nodiscard]] bool HasForm(const TESForm* a_form) const;
 		[[nodiscard]] bool HasForm(FormID a_formID) const;
 
 		// members

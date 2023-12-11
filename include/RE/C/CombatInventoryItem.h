@@ -9,6 +9,7 @@ namespace RE
 	class BGSSaveGameBuffer;
 	class CombatController;
 	class TESBoundObject;
+	class TESForm;
 	class BGSEquipSlot;
 
 	struct CombatInventoryItemResource
@@ -66,7 +67,7 @@ namespace RE
 		virtual float                GetOptimalRange();                                         // 07 - { return 0.0; }
 		virtual float                GetEquipRange();                                           // 08 - { return FLT_MAX; }
 		virtual TYPE                 GetType();                                                 // 09
-		virtual TYPE                 GetEquipType(BGSEquipSlot a_slot);                         // 0A - { return GetType(); }
+		virtual TYPE                 GetEquipType(BGSEquipSlot* a_slot);                        // 0A - { return GetType(); }
 		virtual CATEGORY             GetCategory() = 0;                                         // 0B
 		virtual float                CalculateScore(CombatController* a_controller) = 0;        // 0C
 		virtual CombatInventoryItem* Clone() = 0;                                               // 0D
@@ -79,7 +80,7 @@ namespace RE
 		virtual void                 GetDescription(const char* a_dest, std::uint32_t a_size);  // 14
 
 		// members
-		TESBoundObject*         item;       // 10
+		TESForm*                item;       // 10
 		float                   itemScore;  // 18
 		std::uint32_t           unk1C;      // 1C
 		CombatInventoryItemSlot itemSlot;   // 20

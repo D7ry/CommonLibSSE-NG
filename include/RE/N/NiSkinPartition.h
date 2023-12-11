@@ -15,7 +15,7 @@ namespace RE
 		{
 			ID3D11Buffer*          vertexBuffer;   // 00
 			ID3D11Buffer*          indexBuffer;    // 08
-			std::uint64_t          vertexDesc;     // 10
+			BSGraphics::VertexDesc vertexDesc;     // 10
 			volatile std::uint32_t refCount;       // 18
 			std::uint32_t          pad1C;          // 1C
 			std::uint8_t*          rawVertexData;  // 20
@@ -68,7 +68,8 @@ namespace RE
 		std::uint32_t          numPartitions;  // 10
 		std::uint32_t          pad14;          // 14
 		SimpleArray<Partition> partitions;     // 18
-		std::uint64_t          unk20;          // 20
+		std::uint32_t          vertexCount;    // 20
+		std::uint32_t          unk24;          // 24
 	};
 	static_assert(sizeof(NiSkinPartition) == 0x28);
 }

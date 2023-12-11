@@ -46,7 +46,7 @@ namespace RE
 			// add
 			virtual void                       SetLinkedCallback(ITypeLinkedCallback* a_callback) = 0;                                                                                                                                     // 01
 			virtual void                       TraceStack(const char* a_str, VMStackID a_stackID, Severity a_severity = Severity::kError) = 0;                                                                                             // 02
-			virtual void                       Unk_03(void) = 0;                                                                                                                                                                           // 03
+			virtual void                       FormatAndPostMessage(const char* a_message, Severity a_severity) = 0;                                                                                                                       // 03
 			virtual void                       Update(float a_budget) = 0;                                                                                                                                                                 // 04
 			virtual void                       UpdateTasklets(float a_budget) = 0;                                                                                                                                                         // 05
 			virtual void                       SetOverstressed(bool a_set) = 0;                                                                                                                                                            // 06
@@ -117,6 +117,13 @@ namespace RE
 
 			template <class F>
 			void RegisterFunction(std::string_view a_fnName, std::string_view a_className, F a_callback, bool a_callableFromTasklets = false);
+
+			template <class R, class F>
+			void RegisterLatentFunction(std::string_view a_fnName, std::string_view a_className, F a_callback, bool a_callableFromTasklets = false);
+
+			template <class V>
+			requires is_return_convertible_v<V>
+			void ReturnLatentResult(VMStackID a_stackID, V result);
 
 			void SetCallableFromTasklets(const char* a_className, const char* a_stateName, const char* a_fnName, bool a_callable);
 			void SetCallableFromTasklets(const char* a_className, const char* a_fnName, bool a_callable);

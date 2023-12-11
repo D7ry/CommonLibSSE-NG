@@ -88,7 +88,7 @@ namespace RE
 				kLockpicking = 8,
 				kSneak = 9,
 				kAlchemy = 10,
-				kSpecchcraft = 11,
+				kSpeechcraft = 11,
 				kAlteration = 12,
 				kConjuration = 13,
 				kDestruction = 14,
@@ -236,6 +236,7 @@ namespace RE
 		BSEventNotifyControl ProcessEvent(const MenuOpenCloseEvent* a_event, BSTEventSource<MenuOpenCloseEvent>* a_eventSource) override;  // 01
 
 		bool                         AddPerk(BGSPerk* a_perk, std::int8_t a_rank);
+		bool                         AddPerks(const std::vector<BGSPerk*>& a_perks, std::int8_t a_rank);
 		void                         ChangeHeadPart(BGSHeadPart* a_target);
 		bool                         ContainsKeyword(std::string_view a_editorID);
 		[[nodiscard]] BGSHeadPart**  GetBaseOverlays() const;
@@ -254,9 +255,12 @@ namespace RE
 		bool                         HasOverlays();
 		bool                         IsInFaction(TESFaction* a_faction) const;
 		bool                         RemovePerk(BGSPerk* a_perk);
+		bool                         RemovePerks(const std::vector<BGSPerk*>& a_perks);
+		bool                         SetDefaultOutfit(BGSOutfit* a_outfit);
 		void                         SetFaceTexture(BGSTextureSet* a_textureSet);
 		void                         SetHairColor(BGSColorForm* a_hairColor);
 		void                         SetSkinFromTint(NiColorA* a_result, TintMask* a_tintMask, bool a_fromTint);
+		bool                         SetSleepOutfit(BGSOutfit* a_outfit);
 		void                         UpdateNeck(BSFaceGenNiNode* a_faceNode);
 
 		// members
@@ -291,6 +295,9 @@ namespace RE
 		BSTArray<BGSRelationship*>*                 relationships;    // 250
 		FaceData*                                   faceData;         // 258
 		BSTArray<Layer*>*                           tintLayers;       // 260
+
+	private:
+		void CopyPerkRankArray(const std::vector<PerkRankData>& a_copiedData);
 	};
 	static_assert(sizeof(TESNPC) == 0x268);
 }

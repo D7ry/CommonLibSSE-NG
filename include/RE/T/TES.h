@@ -1,5 +1,6 @@
 #pragma once
 
+#include "RE/B/BSContainer.h"
 #include "RE/B/BSTEvent.h"
 #include "RE/B/BSTList.h"
 #include "RE/B/BSTTuple.h"
@@ -65,12 +66,13 @@ namespace RE
 
 		static TES* GetSingleton();
 
-		void ForEachReference(std::function<bool(TESObjectREFR& a_ref)> a_callback);
-		void ForEachReferenceInRange(TESObjectREFR* a_origin, float a_radius, std::function<bool(TESObjectREFR& a_ref)> a_callback);
+		void ForEachReference(std::function<BSContainer::ForEachResult(TESObjectREFR& a_ref)> a_callback);
+		void ForEachReferenceInRange(TESObjectREFR* a_origin, float a_radius, std::function<BSContainer::ForEachResult(TESObjectREFR& a_ref)> a_callback);
 
 		TESObjectCELL*  GetCell(const NiPoint3& a_position) const;
-		TESLandTexture* GetLandTexture(const NiPoint3& a_position) const;
 		MATERIAL_ID     GetLandMaterialType(const NiPoint3& a_position) const;
+		bool            GetLandHeight(const NiPoint3& a_positionIn, float& a_heightOut);
+		TESLandTexture* GetLandTexture(const NiPoint3& a_position) const;
 		float           GetWaterHeight(const NiPoint3& a_pos, TESObjectCELL* a_cell) const;
 		NiAVObject*     Pick(bhkPickData& a_pickData);
 		void            PurgeBufferedCells();
@@ -84,7 +86,8 @@ namespace RE
 		BSTempNodeManager*                                  tempNodeManager;            // 098
 		std::uint64_t                                       unk0A0;                     // 0A0
 		std::uint64_t                                       unk0A8;                     // 0A8
-		std::uint64_t                                       unk0B0;                     // 0B0
+		std::uint32_t                                       unk0B0;                     // 0B0
+		std::uint32_t                                       unk0B4;                     // 0B4
 		std::uint64_t                                       unk0B8;                     // 0B8
 		TESObjectCELL*                                      interiorCell;               // 0C0
 		TESObjectCELL**                                     interiorBuffer;             // 0C8

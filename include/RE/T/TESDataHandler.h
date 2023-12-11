@@ -12,6 +12,7 @@
 namespace RE
 {
 	class BGSPrimitive;
+	class InventoryChanges;
 	class NiPoint3;
 	class TESFile;
 	class TESRegionDataManager;
@@ -38,6 +39,8 @@ namespace RE
 	{
 	public:
 		static TESDataHandler* GetSingleton();
+
+		bool AddFormToDataHandler(TESForm* a_form);
 
 		std::uint32_t LoadScripts();
 		TESForm*      LookupForm(FormID a_rawFormID, std::string_view a_modName);
@@ -93,7 +96,7 @@ namespace RE
 		std::uint8_t                      padDAB;                                         // DAB
 		std::uint32_t                     padDAC;                                         // DAC
 		TESRegionDataManager*             regionDataManager;                              // DB0
-		std::uint64_t                     unkDB8;                                         // DB8
+		InventoryChanges*                 merchantInventory;                              // DB8
 	};
 	static_assert(sizeof(TESDataHandler) == 0xDC0);
 

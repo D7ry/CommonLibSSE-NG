@@ -2,96 +2,17 @@
 
 namespace RE
 {
-	GFxValue::DisplayInfo::DisplayInfo() :
-		_x(0.0),
-		_y(0.0),
-		_rotation(0.0),
-		_xScale(0.0),
-		_yScale(0.0),
-		_alpha(0.0),
-		_visible(false),
-		_pad31(0),
-		_pad32(0),
-		_pad34(0),
-		_z(0.0),
-		_xRotation(0.0),
-		_yRotation(0.0),
-		_zScale(0.0),
-		_fov(0.0),
-		_viewMatrix3D(),
-		_perspMatrix3D(),
-		_flags(Flag::kNone),
-		_padD2(0),
-		_padD4(0)
-	{}
-
 	GFxValue::DisplayInfo::DisplayInfo(double a_x, double a_y) :
 		_x(a_x),
-		_y(a_y),
-		_rotation(0.0),
-		_xScale(0.0),
-		_yScale(0.0),
-		_alpha(0.0),
-		_visible(false),
-		_pad31(0),
-		_pad32(0),
-		_pad34(0),
-		_z(0.0),
-		_xRotation(0.0),
-		_yRotation(0.0),
-		_zScale(0.0),
-		_fov(0.0),
-		_viewMatrix3D(),
-		_perspMatrix3D(),
-		_flags(Flag::kX, Flag::kY),
-		_padD2(0),
-		_padD4(0)
+		_y(a_y)
 	{}
 
 	GFxValue::DisplayInfo::DisplayInfo(double a_rotation) :
-		_x(0.0),
-		_y(0.0),
-		_rotation(a_rotation),
-		_xScale(0.0),
-		_yScale(0.0),
-		_alpha(0.0),
-		_visible(false),
-		_pad31(0),
-		_pad32(0),
-		_pad34(0),
-		_z(0.0),
-		_xRotation(0.0),
-		_yRotation(0.0),
-		_zScale(0.0),
-		_fov(0.0),
-		_viewMatrix3D(),
-		_perspMatrix3D(),
-		_flags(Flag::kRotation),
-		_padD2(0),
-		_padD4(0)
+		_rotation(a_rotation)
 	{}
 
 	GFxValue::DisplayInfo::DisplayInfo(bool a_visible) :
-		_x(0.0),
-		_y(0.0),
-		_rotation(0.0),
-		_xScale(0.0),
-		_yScale(0.0),
-		_alpha(0.0),
-		_visible(a_visible),
-		_pad31(0),
-		_pad32(0),
-		_pad34(0),
-		_z(0.0),
-		_xRotation(0.0),
-		_yRotation(0.0),
-		_zScale(0.0),
-		_fov(0.0),
-		_viewMatrix3D(),
-		_perspMatrix3D(),
-		_flags(Flag::kVisible),
-		_padD2(0),
-		_padD4(0)
+		_visible(a_visible)
 	{}
 
 	void GFxValue::DisplayInfo::Clear()
@@ -398,6 +319,13 @@ namespace RE
 		return func(this, a_data, a_name, a_isDObj);
 	}
 
+	void GFxValue::ObjectInterface::VisitMembers(void* a_data, ObjVisitor* a_visitor, bool a_isDObj) const
+	{
+		using func_t = decltype(&GFxValue::ObjectInterface::VisitMembers);
+		REL::Relocation<func_t> func{ Offset::GFxValue::ObjectInterface::VisitMembers };
+		return func(this, a_data, a_visitor, a_isDObj);
+	}
+
 	std::uint32_t GFxValue::ObjectInterface::GetArraySize(void* a_data) const
 	{
 		using func_t = decltype(&GFxValue::ObjectInterface::GetArraySize);
@@ -452,6 +380,34 @@ namespace RE
 		using func_t = decltype(&GFxValue::ObjectInterface::SetDisplayInfo);
 		REL::Relocation<func_t> func{ Offset::GFxValue::ObjectInterface::SetDisplayInfo };
 		return func(this, a_data, a_info);
+	}
+
+	bool GFxValue::ObjectInterface::GetDisplayMatrix(void* a_data, GMatrix2D* a_mat) const
+	{
+		using func_t = decltype(&GFxValue::ObjectInterface::GetDisplayMatrix);
+		REL::Relocation<func_t> func{ Offset::GFxValue::ObjectInterface::GetDisplayMatrix };
+		return func(this, a_data, a_mat);
+	}
+
+	bool GFxValue::ObjectInterface::SetDisplayMatrix(void* a_data, const GMatrix2D& a_mat)
+	{
+		using func_t = decltype(&GFxValue::ObjectInterface::SetDisplayMatrix);
+		REL::Relocation<func_t> func{ Offset::GFxValue::ObjectInterface::SetDisplayMatrix };
+		return func(this, a_data, a_mat);
+	}
+
+	bool GFxValue::ObjectInterface::GetCxform(void* a_data, GRenderer::Cxform* a_cx) const
+	{
+		using func_t = decltype(&GFxValue::ObjectInterface::GetCxform);
+		REL::Relocation<func_t> func{ Offset::GFxValue::ObjectInterface::GetCxform };
+		return func(this, a_data, a_cx);
+	}
+
+	bool GFxValue::ObjectInterface::SetCxform(void* a_data, const GRenderer::Cxform& a_cx)
+	{
+		using func_t = decltype(&GFxValue::ObjectInterface::SetCxform);
+		REL::Relocation<func_t> func{ Offset::GFxValue::ObjectInterface::SetCxform };
+		return func(this, a_data, a_cx);
 	}
 
 	bool GFxValue::ObjectInterface::SetText(void* a_data, const char* a_text, bool a_isHTML)
@@ -880,6 +836,37 @@ namespace RE
 		return _objectInterface->DeleteMember(_value.obj, a_name, IsDisplayObject());
 	}
 
+	void GFxValue::VisitMembers(ObjectVisitor* a_visitor) const
+	{
+		assert(IsObject());
+		return _objectInterface->VisitMembers(_value.obj, a_visitor, IsDisplayObject());
+	}
+
+	void GFxValue::VisitMembers(ObjectVisitFn&& a_visitor) const
+	{
+		assert(IsObject());
+
+		struct MemberVisitor : ObjectVisitor
+		{
+		public:
+			MemberVisitor(ObjectVisitFn&& a_fn) :
+				_fn(a_fn) {}
+
+			void Visit(const char* a_name, const RE::GFxValue& a_val) override
+			{
+				if (_fn) {
+					_fn(a_name, a_val);
+				}
+			}
+
+		private:
+			ObjectVisitFn _fn;
+		};
+
+		MemberVisitor visitor{ std::forward<ObjectVisitFn>(a_visitor) };
+		return _objectInterface->VisitMembers(_value.obj, std::addressof(visitor), IsDisplayObject());
+	}
+
 	std::uint32_t GFxValue::GetArraySize() const
 	{
 		assert(IsArray());
@@ -936,6 +923,30 @@ namespace RE
 	{
 		assert(IsDisplayObject());
 		return _objectInterface->SetDisplayInfo(_value.obj, a_info);
+	}
+
+	bool GFxValue::GetDisplayMatrix(GMatrix2D* a_mat) const
+	{
+		assert(IsDisplayObject());
+		return _objectInterface->GetDisplayMatrix(_value.obj, a_mat);
+	}
+
+	bool GFxValue::SetDisplayMatrix(const GMatrix2D& a_mat)
+	{
+		assert(IsDisplayObject());
+		return _objectInterface->SetDisplayMatrix(_value.obj, a_mat);
+	}
+
+	bool GFxValue::GetCxform(GRenderer::Cxform* a_cx) const
+	{
+		assert(IsDisplayObject());
+		return _objectInterface->GetCxform(_value.obj, a_cx);
+	}
+
+	bool GFxValue::SetCxform(const GRenderer::Cxform& a_cx)
+	{
+		assert(IsDisplayObject());
+		return _objectInterface->SetCxform(_value.obj, a_cx);
 	}
 
 	bool GFxValue::SetText(const char* a_text)

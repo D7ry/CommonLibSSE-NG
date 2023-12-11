@@ -1,11 +1,22 @@
 #include "RE/A/AIProcess.h"
 
+#include "RE/B/BipedAnim.h"
+#include "RE/F/FixedStrings.h"
+#include "RE/F/FormTraits.h"
 #include "RE/H/HighProcessData.h"
 #include "RE/M/MiddleHighProcessData.h"
+#include "RE/N/NiAVObject.h"
 #include "SKSE/API.h"
 
 namespace RE
 {
+	void AIProcess::ClearActionHeadtrackTarget(bool a_defaultHold)
+	{
+		if (high) {
+			high->ClearHeadtrackTarget(HighProcessData::HEAD_TRACK_TYPE::kAction, a_defaultHold);
+		}
+	}
+
 	void AIProcess::ClearMuzzleFlashes()
 	{
 		using func_t = decltype(&AIProcess::ClearMuzzleFlashes);
@@ -26,6 +37,11 @@ namespace RE
 	ActorHandle AIProcess::GetCommandingActor() const
 	{
 		return middleHigh ? middleHigh->commandingActor : ActorHandle{};
+	}
+
+	TESShout* AIProcess::GetCurrentShout()
+	{
+		return high ? high->currentShout : nullptr;
 	}
 
 	TESForm* AIProcess::GetEquippedLeftHand()
@@ -50,6 +66,27 @@ namespace RE
 		return middleHigh && middleHigh->summonedCreature;
 	}
 
+	NiAVObject* AIProcess::GetMagicNode(const BSTSmartPointer<BipedAnim>& a_biped) const
+	{
+		if (middleHigh && a_biped) {
+			return a_biped->root->GetObjectByName(FixedStrings::GetSingleton()->npcRMagicNode);
+		}
+		return nullptr;
+	}
+
+	NiAVObject* AIProcess::GetWeaponNode(const BSTSmartPointer<BipedAnim>& a_biped) const
+	{
+		if (middleHigh) {
+			if (a_biped) {
+				return a_biped->root->GetObjectByName(FixedStrings::GetSingleton()->weapon);
+			} else {
+				return middleHigh->unk148;
+			}
+		} else {
+			return nullptr;
+		}
+	}
+
 	ObjectRefHandle AIProcess::GetOccupiedFurniture() const
 	{
 		if (middleHigh) {
@@ -69,6 +106,19 @@ namespace RE
 			package = currentPackage.package;
 		}
 		return package;
+	}
+
+	Actor* AIProcess::GetUserData() const
+	{
+		const auto torsoNode = middleHigh ? middleHigh->torsoNode : nullptr;
+		const auto userData = torsoNode ? torsoNode->GetUserData() : nullptr;
+
+		return userData ? userData->As<Actor>() : nullptr;
+	}
+
+	float AIProcess::GetVoiceRecoveryTime() const
+	{
+		return high ? high->voiceRecoveryTime : 0.0f;
 	}
 
 	bool AIProcess::InHighProcess() const
@@ -127,6 +177,25 @@ namespace RE
 		return cachedValues && cachedValues->flags.all(CachedValues::Flags::kActorIsGhost);
 	}
 
+	void AIProcess::KnockExplosion(Actor* a_actor, const NiPoint3& a_location, float a_magnitude)
+	{
+		using func_t = decltype(&AIProcess::KnockExplosion);
+		REL::Relocation<func_t> func{ RELOCATION_ID(38858, 39895) };
+		return func(this, a_actor, a_location, a_magnitude);
+	}
+
+	bool AIProcess::PlayIdle(Actor* a_actor, TESIdleForm* a_idle, TESObjectREFR* a_target)
+	{
+		return SetupSpecialIdle(a_actor, DEFAULT_OBJECT::kActionIdle, a_idle, true, false, a_target);
+	}
+
+	void AIProcess::SetActorsDetectionEvent(Actor* a_actor, const NiPoint3& a_location, std::int32_t a_soundLevel, TESObjectREFR* a_ref)
+	{
+		using func_t = decltype(&AIProcess::SetActorsDetectionEvent);
+		REL::Relocation<func_t> func{ RELOCATION_ID(38311, 39286) };
+		return func(this, a_actor, a_location, a_soundLevel, a_ref);
+	}
+
 	void AIProcess::SetArrested(bool a_arrested)
 	{
 		if (high) {
@@ -153,6 +222,20 @@ namespace RE
 		if (middleHigh) {
 			middleHigh->update3DModel.set(a_flags);
 		}
+	}
+
+	bool AIProcess::SetupSpecialIdle(Actor* a_actor, DEFAULT_OBJECT a_action, TESIdleForm* a_idle, bool a_arg5, bool a_arg6, TESObjectREFR* a_target)
+	{
+		using func_t = decltype(&AIProcess::SetupSpecialIdle);
+		REL::Relocation<func_t> func{ RELOCATION_ID(38290, 39256) };
+		return func(this, a_actor, a_action, a_idle, a_arg5, a_arg6, a_target);
+	}
+
+	void AIProcess::StopCurrentIdle(Actor* a_actor, bool a_forceIdleStop)
+	{
+		using func_t = decltype(&AIProcess::StopCurrentIdle);
+		REL::Relocation<func_t> func{ RELOCATION_ID(38291, 39257) };
+		return func(this, a_actor, a_forceIdleStop);
 	}
 
 	void AIProcess::Update3DModel(Actor* a_actor)

@@ -89,6 +89,8 @@ namespace RE
 				kFormRetainsID = 1 << 22,
 				kDestroyed = 1 << 23,
 
+				kUnk24 = 1 << 24,
+
 				kNoAIAcquire = 1 << 25,
 				kObstacle = 1 << 25,
 
@@ -299,6 +301,7 @@ namespace RE
 		[[nodiscard]] const char* GetName() const;
 		[[nodiscard]] float       GetWeight() const;
 		[[nodiscard]] bool        HasKeywordInArray(const std::vector<BGSKeyword*>& a_keywords, bool a_matchAll) const;
+		[[nodiscard]] bool        HasAnyKeywordByEditorID(const std::vector<std::string>& editorIDs) const;
 		[[nodiscard]] bool        HasKeywordInList(BGSListForm* a_keywordList, bool a_matchAll) const;
 		[[nodiscard]] bool        HasVMAD() const;
 		[[nodiscard]] bool        HasWorldModel() const noexcept;
@@ -320,10 +323,19 @@ namespace RE
 		[[nodiscard]] bool IsDynamicForm() const noexcept { return GetFormID() >= 0xFF000000; }
 		[[nodiscard]] bool IsGold() const noexcept { return GetFormID() == 0x0000000F; }
 		[[nodiscard]] bool IsIgnored() const noexcept { return (GetFormFlags() & RecordFlags::kIgnored) != 0; }
+		[[nodiscard]] bool IsInventoryObject() const;
 		[[nodiscard]] bool IsInitialized() const noexcept { return (GetFormFlags() & RecordFlags::kInitialized) != 0; }
 		[[nodiscard]] bool IsKey() const noexcept { return Is(FormType::KeyMaster); }
 		[[nodiscard]] bool IsLockpick() const noexcept { return GetFormID() == 0x0000000A; }
-
+		/**
+		 * @brief Checks if the Form represents Skooma.
+		 *
+		 * Determines whether the FormID matches one of the known form IDs for Skooma.
+		 *
+		 * @return True if the FormID is either 0x00057A7A or 0x0201391D, indicating that it is Skooma or RedWater Skooma.
+		 *
+		 */
+		[[nodiscard]] bool IsSkooma() const noexcept { return (GetFormID() == 0x00057A7A || GetFormID() == 0x0201391D); }
 		[[nodiscard]] bool IsNot(FormType a_type) const noexcept { return !Is(a_type); }
 
 		template <class... Args>
@@ -338,6 +350,8 @@ namespace RE
 		[[nodiscard]] bool IsPlayerRef() const noexcept { return GetFormID() == 0x00000014; }
 		[[nodiscard]] bool IsSoulGem() const noexcept { return Is(FormType::SoulGem); }
 		[[nodiscard]] bool IsWeapon() const noexcept { return Is(FormType::Weapon); }
+
+		void SetPlayerKnows(bool a_known);
 
 		// members
 		TESFileContainer                                sourceFiles;      // 08

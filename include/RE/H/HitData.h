@@ -34,7 +34,7 @@ namespace RE
 			kPredictDamage = 1 << 13,
 			//kPredictBaseDamage = 1 << 14,
 			kBash = 1 << 14,
-			//kTimedBash = 1 << 16,
+			kTimedBash = 1 << 15,
 			kPowerAttack = 1 << 16,
 			kMeleeAttack = 1 << 18,
 			kRicochet = 1 << 19,
@@ -49,8 +49,8 @@ namespace RE
 		}
 
 		// members
-		NiPoint3                              unk00;                   // 00 - hitLocation?
-		NiPoint3                              unk0C;                   // 0C - hitDirection?
+		NiPoint3                              hitPosition;             // 00
+		NiPoint3                              hitDirection;            // 0C
 		ActorHandle                           aggressor;               // 18
 		ActorHandle                           target;                  // 1C
 		ObjectRefHandle                       sourceRef;               // 20
@@ -66,7 +66,7 @@ namespace RE
 		float                                 percentBlocked;          // 5C
 		float                                 resistedPhysicalDamage;  // 60
 		float                                 resistedTypedDamage;     // 64
-		std::uint32_t                         stagger;                 // 68
+		float                                 stagger;                 // 68
 		float                                 sneakAttackBonus;        // 6C
 		float                                 bonusHealthDamageMult;   // 70
 		float                                 pushBack;                // 74

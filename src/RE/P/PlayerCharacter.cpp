@@ -17,11 +17,24 @@ namespace RE
 		return singleton->get();
 	}
 
+	bool PlayerCharacter::IsGodMode()
+	{
+		REL::Relocation<bool*> singleton{ RELOCATION_ID(517711, 404238) };
+		return *singleton;
+	}
+
 	void PlayerCharacter::ActivatePickRef()
 	{
 		using func_t = decltype(&PlayerCharacter::ActivatePickRef);
 		REL::Relocation<func_t> func{ Offset::PlayerCharacter::ActivatePickRef };
 		return func(this);
+	}
+
+	void PlayerCharacter::AddPlayerAddItemEvent(TESObject* a_object, TESForm* a_owner, TESObjectREFR* a_container, AQUIRE_TYPE a_type)
+	{
+		using func_t = decltype(&PlayerCharacter::AddPlayerAddItemEvent);
+		REL::Relocation<func_t> func{ RELOCATION_ID(39384, 40456) };
+		return func(this, a_object, a_owner, a_container, a_type);
 	}
 
 	bool PlayerCharacter::AttemptPickpocket(TESObjectREFR* a_containerRef, InventoryEntryData* a_entry, std::int32_t a_number, bool a_fromContainer)
@@ -36,9 +49,30 @@ namespace RE
 		return CenterOnCell_Impl(a_cellName, nullptr);
 	}
 
-	bool PlayerCharacter::CenterOnCell(RE::TESObjectCELL* a_cell)
+	bool PlayerCharacter::CenterOnCell(TESObjectCELL* a_cell)
 	{
 		return CenterOnCell_Impl(nullptr, a_cell);
+	}
+
+	bool PlayerCharacter::CheckCast(MagicItem* a_spell, Effect* a_effect, MagicSystem::CannotCastReason& a_reason)
+	{
+		using func_t = decltype(&PlayerCharacter::CheckCast);
+		REL::Relocation<func_t> func{ RELOCATION_ID(39409, 40484) };
+		return func(this, a_spell, a_effect, a_reason);
+	}
+
+	void PlayerCharacter::DestroyMouseSprings()
+	{
+		using func_t = decltype(&PlayerCharacter::DestroyMouseSprings);
+		REL::Relocation<func_t> func{ RELOCATION_ID(39480, 40557) };
+		return func(this);
+	}
+
+	void PlayerCharacter::EndGrabObject()
+	{
+		if (grabType == GrabbingType::kNormal) {
+			DestroyMouseSprings();
+		}
 	}
 
 	NiPointer<Actor> PlayerCharacter::GetActorDoingPlayerCommand() const
@@ -63,6 +97,13 @@ namespace RE
 	NiPointer<TESObjectREFR> PlayerCharacter::GetGrabbedRef()
 	{
 		return grabbedObject.get();
+	}
+
+	std::int32_t PlayerCharacter::GetItemCount(TESBoundObject* a_object)
+	{
+		using func_t = decltype(&PlayerCharacter::GetItemCount);
+		REL::Relocation<func_t> func{ RELOCATION_ID(19275, 19701) };
+		return func(this, a_object);
 	}
 
 	std::uint32_t PlayerCharacter::GetNumTints(std::uint32_t a_tintType)
@@ -116,10 +157,31 @@ namespace RE
 		return func(this, a_item, a_containerOwner, a_containerRef, a_eventType);
 	}
 
+	void PlayerCharacter::SetAIDriven(bool a_enable)
+	{
+		using func_t = decltype(&PlayerCharacter::SetAIDriven);
+		REL::Relocation<func_t> func{ RELOCATION_ID(39507, 40586) };
+		return func(this, a_enable);
+	}
+
+	void PlayerCharacter::SetEscaping(bool a_flag, bool a_escaped)
+	{
+		using func_t = decltype(&PlayerCharacter::SetEscaping);
+		REL::Relocation<func_t> func{ RELOCATION_ID(39574, 40660) };
+		return func(this, a_flag, a_escaped);
+	}
+
 	void PlayerCharacter::StartGrabObject()
 	{
 		using func_t = decltype(&PlayerCharacter::StartGrabObject);
 		REL::Relocation<func_t> func{ Offset::PlayerCharacter::StartGrabObject };
+		return func(this);
+	}
+
+	void PlayerCharacter::UpdateCrosshairs()
+	{
+		using func_t = decltype(&PlayerCharacter::UpdateCrosshairs);
+		REL::Relocation<func_t> func(RELOCATION_ID(39535, 40621));
 		return func(this);
 	}
 

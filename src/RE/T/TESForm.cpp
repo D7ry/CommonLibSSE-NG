@@ -58,6 +58,34 @@ namespace RE
 		}
 	}
 
+	bool TESForm::HasAnyKeywordByEditorID(const std::vector<std::string>& editorIDs) const
+	{
+		// Try to cast to a keyword form interface
+		const auto keywordForm = As<BGSKeywordForm>();
+		if (!keywordForm) {
+			return false;
+		}
+
+		// Iterate through the keywords
+		for (std::uint32_t i = 0; i < keywordForm->GetNumKeywords(); ++i) {
+			auto keywordOpt = keywordForm->GetKeywordAt(i);
+			if (keywordOpt) {
+				auto keyword = *keywordOpt;
+				if (keyword) {
+					const char* keywordEditorID = keyword->GetFormEditorID();
+					if (keywordEditorID) {
+						// Check if the keywordEditorID is in the given editorIDs vector
+						if (std::find(editorIDs.begin(), editorIDs.end(), keywordEditorID) != editorIDs.end()) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
 	bool TESForm::HasKeywordInArray(const std::vector<BGSKeyword*>& a_keywords, bool a_matchAll) const
 	{
 		const auto keywordForm = As<BGSKeywordForm>();
@@ -91,11 +119,12 @@ namespace RE
 		bool hasKeyword = false;
 
 		a_keywordList->ForEachForm([&](const TESForm& a_form) {
-			hasKeyword = keywordForm->HasKeywordID(a_form.GetFormID());
+			const auto keyword = a_form.As<BGSKeyword>();
+			hasKeyword = keyword && keywordForm->HasKeyword(keyword);
 			if (a_matchAll && !hasKeyword || hasKeyword) {
-				return false;
+				return BSContainer::ForEachResult::kStop;
 			}
-			return true;
+			return BSContainer::ForEachResult::kContinue;
 		});
 
 		return hasKeyword;
@@ -120,5 +149,36 @@ namespace RE
 	bool TESForm::HasWorldModel() const noexcept
 	{
 		return As<TESModel>() != nullptr;
+	}
+
+	bool TESForm::IsInventoryObject() const
+	{
+		switch (GetFormType()) {
+		case FormType::Scroll:
+		case FormType::Armor:
+		case FormType::Book:
+		case FormType::Ingredient:
+		case FormType::Light:
+		case FormType::Misc:
+		case FormType::Apparatus:
+		case FormType::Weapon:
+		case FormType::Ammo:
+		case FormType::KeyMaster:
+		case FormType::AlchemyItem:
+		case FormType::Note:
+		case FormType::ConstructibleObject:
+		case FormType::SoulGem:
+		case FormType::LeveledItem:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	void TESForm::SetPlayerKnows(bool a_known)
+	{
+		using func_t = decltype(&TESForm::SetPlayerKnows);
+		REL::Relocation<func_t> func{ RELOCATION_ID(14482, 14639) };
+		return func(this, a_known);
 	}
 }

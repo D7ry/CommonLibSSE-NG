@@ -15,7 +15,7 @@ namespace RE
 		return *singleton;
 	}
 
-	void TES::ForEachReference(std::function<bool(TESObjectREFR& a_ref)> a_callback)
+	void TES::ForEachReference(std::function<BSContainer::ForEachResult(TESObjectREFR& a_ref)> a_callback)
 	{
 		if (interiorCell) {
 			interiorCell->ForEachReference([&](TESObjectREFR& a_ref) {
@@ -27,8 +27,7 @@ namespace RE
 				do {
 					std::uint32_t y = 0;
 					do {
-						const auto cell = gridCells->GetCell(x, y);
-						if (cell && cell->IsAttached()) {
+						if (const auto cell = gridCells->GetCell(x, y); cell && cell->IsAttached()) {
 							cell->ForEachReference([&](TESObjectREFR& a_ref) {
 								return a_callback(a_ref);
 							});
@@ -46,14 +45,13 @@ namespace RE
 		}
 	}
 
-	void TES::ForEachReferenceInRange(TESObjectREFR* a_origin, float a_radius, std::function<bool(TESObjectREFR& a_ref)> a_callback)
+	void TES::ForEachReferenceInRange(TESObjectREFR* a_origin, float a_radius, std::function<BSContainer::ForEachResult(TESObjectREFR& a_ref)> a_callback)
 	{
 		if (a_origin && a_radius > 0.0f) {
 			const auto originPos = a_origin->GetPosition();
-			const auto radiusSquared = a_radius * a_radius;
 
 			if (interiorCell) {
-				interiorCell->ForEachReferenceInRange(originPos, radiusSquared, [&](TESObjectREFR& a_ref) {
+				interiorCell->ForEachReferenceInRange(originPos, a_radius, [&](TESObjectREFR& a_ref) {
 					return a_callback(a_ref);
 				});
 			} else {
@@ -67,13 +65,11 @@ namespace RE
 					do {
 						std::uint32_t y = 0;
 						do {
-							auto cell = gridCells->GetCell(x, y);
-							if (cell && cell->IsAttached()) {
-								const auto cellCoords = cell->GetCoordinates();
-								if (cellCoords) {
+							if (const auto cell = gridCells->GetCell(x, y); cell && cell->IsAttached()) {
+								if (const auto cellCoords = cell->GetCoordinates(); cellCoords) {
 									const NiPoint2 worldPos{ cellCoords->worldX, cellCoords->worldY };
 									if (worldPos.x < xPlus && (worldPos.x + 4096.0f) > xMinus && worldPos.y < yPlus && (worldPos.y + 4096.0f) > yMinus) {
-										cell->ForEachReferenceInRange(originPos, radiusSquared, [&](TESObjectREFR& a_ref) {
+										cell->ForEachReferenceInRange(originPos, a_radius, [&](TESObjectREFR& a_ref) {
 											return a_callback(a_ref);
 										});
 									}
@@ -87,7 +83,7 @@ namespace RE
 			}
 
 			if (const auto skyCell = worldSpace ? worldSpace->GetSkyCell() : nullptr; skyCell) {
-				skyCell->ForEachReferenceInRange(originPos, radiusSquared, [&](TESObjectREFR& a_ref) {
+				skyCell->ForEachReferenceInRange(originPos, a_radius, [&](TESObjectREFR& a_ref) {
 					return a_callback(a_ref);
 				});
 			}
@@ -105,17 +101,24 @@ namespace RE
 		return func(this, a_position);
 	}
 
-	TESLandTexture* TES::GetLandTexture(const NiPoint3& a_position) const
-	{
-		using func_t = decltype(&TES::GetLandTexture);
-		REL::Relocation<func_t> func{ RELOCATION_ID(13202, 13348) };
-		return func(this, a_position);
-	}
-
 	MATERIAL_ID TES::GetLandMaterialType(const NiPoint3& a_position) const
 	{
 		using func_t = decltype(&TES::GetLandMaterialType);
 		REL::Relocation<func_t> func{ RELOCATION_ID(13203, 13349) };
+		return func(this, a_position);
+	}
+
+	bool TES::GetLandHeight(const NiPoint3& a_positionIn, float& a_heightOut)
+	{
+		using func_t = decltype(&TES::GetLandHeight);
+		REL::Relocation<func_t> func{ RELOCATION_ID(13198, 13344) };
+		return func(this, a_positionIn, a_heightOut);
+	}
+
+	TESLandTexture* TES::GetLandTexture(const NiPoint3& a_position) const
+	{
+		using func_t = decltype(&TES::GetLandTexture);
+		REL::Relocation<func_t> func{ RELOCATION_ID(13202, 13348) };
 		return func(this, a_position);
 	}
 

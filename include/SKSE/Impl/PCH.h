@@ -19,6 +19,7 @@
 #include <exception>
 #include <execution>
 #include <filesystem>
+#include <format>
 #include <fstream>
 #include <functional>
 #include <iomanip>
@@ -63,8 +64,10 @@ static_assert(
 #include <spdlog/spdlog.h>
 #pragma warning(pop)
 
-#include "SKSE/Impl/Util.h"
+#include "SKSE/Impl/DInputAPI.h"
+#include "SKSE/Impl/ScePadAPI.h"
 #include "SKSE/Impl/WinAPI.h"
+#include "SKSE/Impl/XInputAPI.h"
 
 namespace SKSE
 {
@@ -299,7 +302,7 @@ namespace SKSE
 				return (_impl & (static_cast<underlying_type>(a_args) | ...)) == static_cast<underlying_type>(0);
 			}
 
-		private :
+		private:
 			underlying_type _impl{ 0 };
 		};
 

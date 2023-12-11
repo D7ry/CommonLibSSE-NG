@@ -99,8 +99,8 @@ namespace RE
 	{
 		auto heap = MemoryManager::GetSingleton();
 		return heap ?
-                   heap->Allocate(a_size, 0, false) :
-                   nullptr;
+		           heap->Allocate(a_size, 0, false) :
+		           nullptr;
 	}
 
 	template <class T>
@@ -119,8 +119,8 @@ namespace RE
 	{
 		auto heap = MemoryManager::GetSingleton();
 		return heap ?
-                   heap->Allocate(a_size, static_cast<std::int32_t>(a_alignment), true) :
-                   nullptr;
+		           heap->Allocate(a_size, static_cast<std::int32_t>(a_alignment), true) :
+		           nullptr;
 	}
 
 	template <class T>
@@ -137,7 +137,11 @@ namespace RE
 
 	inline void* calloc(std::size_t a_num, std::size_t a_size)
 	{
-		return malloc(a_num * a_size);
+		const auto ret = malloc(a_num * a_size);
+		if (ret) {
+			std::memset(ret, 0, a_num * a_size);
+		}
+		return ret;
 	}
 
 	template <class T>
@@ -156,8 +160,8 @@ namespace RE
 	{
 		auto heap = MemoryManager::GetSingleton();
 		return heap ?
-                   heap->Reallocate(a_ptr, a_newSize, 0, false) :
-                   nullptr;
+		           heap->Reallocate(a_ptr, a_newSize, 0, false) :
+		           nullptr;
 	}
 
 	template <class T>
@@ -170,8 +174,8 @@ namespace RE
 	{
 		auto heap = MemoryManager::GetSingleton();
 		return heap ?
-                   heap->Reallocate(a_ptr, a_newSize, static_cast<std::int32_t>(a_alignment), true) :
-                   nullptr;
+		           heap->Reallocate(a_ptr, a_newSize, static_cast<std::int32_t>(a_alignment), true) :
+		           nullptr;
 	}
 
 	template <class T>

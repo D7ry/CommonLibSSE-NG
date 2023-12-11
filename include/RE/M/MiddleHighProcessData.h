@@ -146,7 +146,7 @@ namespace RE
 		BSTSmartPointer<AnimResponse>                  animResponse;                // 0F8
 		BSTArray<CommandedActorData>                   commandedActors;             // 100
 		NiNode*                                        damageRootNode[6];           // 118
-		std::uint64_t                                  unk148;                      // 148
+		NiAVObject*                                    unk148;                      // 148
 		NiNode*                                        weaponBone;                  // 150
 		NiAVObject*                                    headNode;                    // 158
 		NiAVObject*                                    torsoNode;                   // 160
@@ -194,7 +194,7 @@ namespace RE
 		float                                          unk29C;                      // 29C
 		float                                          unk2A0;                      // 2A0
 		float                                          unk2A4;                      // 2A4
-		float                                          unk2A8;                      // 2A8
+		float                                          currentMovementSpeed;        // 2A8
 		float                                          unk2AC;                      // 2AC
 		float                                          unk2B0;                      // 2B0
 		float                                          bleedoutRate;                // 2B4
@@ -230,7 +230,7 @@ namespace RE
 		bool                                           unk31A;                      // 31A
 		bool                                           pickPocketed;                // 31B
 		bool                                           summonedCreature;            // 31C
-		bool                                           unk31D;                      // 31D
+		bool                                           forceNextUpdate;             // 31D
 		bool                                           unk31E;                      // 31E
 		bool                                           unk31F;                      // 31F
 		bool                                           unk320;                      // 320
@@ -242,9 +242,9 @@ namespace RE
 		bool                                           unk326;                      // 326
 		bool                                           unk327;                      // 327
 		bool                                           unk328;                      // 328
-		bool                                           unk329;                      // 329
+		bool                                           preventCombat;               // 329
 		bool                                           unk32A;                      // 32A
-		bool                                           unk32B;                      // 32B
+		bool                                           isFleeing;                   // 32B
 		bool                                           unk32C;                      // 32C
 		bool                                           hostileGuard;                // 32D
 		bool                                           unk32E;                      // 32E

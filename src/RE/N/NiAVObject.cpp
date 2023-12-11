@@ -10,14 +10,33 @@
 #include "RE/B/BSTSmartPointer.h"
 #include "RE/B/BSVisit.h"
 #include "RE/B/BSXFlags.h"
+#include "RE/B/bhkNiCollisionObject.h"
+#include "RE/B/bhkRigidBody.h"
 #include "RE/N/NiColor.h"
 #include "RE/N/NiNode.h"
 #include "RE/N/NiProperty.h"
 #include "RE/N/NiRTTI.h"
 #include "RE/S/State.h"
+#include "RE/h/hkpRigidBody.h"
 
 namespace RE
 {
+	NiAVObject* NiAVObject::Clone()
+	{
+		using func_t = decltype(&NiAVObject::Clone);
+		REL::Relocation<func_t> func{ RELOCATION_ID(68835, 70187) };
+		return func(this);
+	}
+
+	void NiAVObject::CullGeometry(bool a_cull)
+	{
+		BSVisit::TraverseScenegraphGeometries(this, [&](BSGeometry* a_geo) -> BSVisit::BSVisitControl {
+			a_geo->SetAppCulled(a_cull);
+
+			return BSVisit::BSVisitControl::kContinue;
+		});
+	}
+
 	void NiAVObject::CullNode(bool a_cull)
 	{
 		BSVisit::TraverseScenegraphObjects(this, [&](NiAVObject* a_object) -> BSVisit::BSVisitControl {
@@ -37,6 +56,22 @@ namespace RE
 		using func_t = decltype(&NiAVObject::GetCollisionObject);
 		REL::Relocation<func_t> func{ RELOCATION_ID(25482, 26022) };
 		return func(this);
+	}
+
+	COL_LAYER NiAVObject::GetCollisionLayer() const
+	{
+		const auto colObj = collisionObject ? collisionObject->AsBhkNiCollisionObject() : nullptr;
+		const auto rigidBody = colObj && colObj->body ? colObj->body->AsBhkRigidBody() : nullptr;
+
+		if (rigidBody && rigidBody->referencedObject) {
+			if (const auto havokRigidBody = static_cast<hkpRigidBody*>(rigidBody->referencedObject.get())) {
+				if (const auto collidable = havokRigidBody->GetCollidable()) {
+					return collidable->GetCollisionLayer();
+				}
+			}
+		}
+
+		return COL_LAYER::kUnidentified;
 	}
 
 	BSGeometry* NiAVObject::GetFirstGeometryOfShaderType(BSShaderMaterial::Feature a_type)

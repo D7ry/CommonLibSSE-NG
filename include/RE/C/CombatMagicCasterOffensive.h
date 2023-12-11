@@ -9,6 +9,7 @@ namespace RE
 	{
 	public:
 		inline static constexpr auto RTTI = RTTI_CombatMagicCasterOffensive;
+		inline static constexpr auto VTABLE = VTABLE_CombatMagicCasterOffensive;
 
 		~CombatMagicCasterOffensive() override;  // 00
 
@@ -25,8 +26,8 @@ namespace RE
 		void                          NotifyStopCast(CombatController* a_combatController) override;             // 0C
 
 		// members
-		AITimer unk20;  // 20
-		AITimer unk28;  // 28
+		AITimer startCastTimer;  // 20
+		AITimer stopCastTimer;   // 28
 	};
 	static_assert(sizeof(CombatMagicCasterOffensive) == 0x30);
 }

@@ -3,25 +3,28 @@
 
 namespace RE
 {
+	void BGSIdleCollection::CopyIdles(const std::vector<TESIdleForm*>& a_copiedData)
+	{
+		auto oldData = idles;
+
+		auto newSize = a_copiedData.size();
+		auto newData = calloc<TESIdleForm*>(newSize);
+		std::ranges::copy(a_copiedData, newData);
+
+		idleCount = static_cast<std::int8_t>(newSize);
+		idles = newData;
+
+		free(oldData);
+	}
+
 	bool BGSIdleCollection::AddIdle(TESIdleForm* a_idle)
 	{
 		if (!GetIndex(a_idle)) {
 			std::vector<TESIdleForm*> copiedData{ idles, idles + idleCount };
 			copiedData.push_back(a_idle);
-
-			auto newData = calloc<TESIdleForm*>(copiedData.size());
-			std::ranges::copy(copiedData, newData);
-
-			auto oldData = idles;
-
-			idleCount = static_cast<std::int8_t>(copiedData.size());
-			idles = newData;
-
-			free(oldData);
-
+			CopyIdles(copiedData);
 			return true;
 		}
-
 		return false;
 	}
 
@@ -38,7 +41,7 @@ namespace RE
 	{
 		std::optional<std::uint32_t> index = std::nullopt;
 		if (idles) {
-			for (std::int8_t i = 0; i < idleCount; i++) {
+			for (std::int8_t i = 0; i < idleCount; ++i) {
 				if (idles[i] == a_idle) {
 					index = i;
 					break;
@@ -54,20 +57,9 @@ namespace RE
 		if (index) {
 			std::vector<TESIdleForm*> copiedData{ idles, idles + idleCount };
 			copiedData.erase(copiedData.cbegin() + *index);
-
-			auto newData = calloc<TESIdleForm*>(copiedData.size());
-			std::ranges::copy(copiedData, newData);
-
-			auto oldData = idles;
-
-			idleCount = static_cast<std::int8_t>(copiedData.size());
-			idles = newData;
-
-			free(oldData);
-
+			CopyIdles(copiedData);
 			return true;
 		}
-
 		return false;
 	}
 }

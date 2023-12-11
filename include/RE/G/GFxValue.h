@@ -1,9 +1,11 @@
 #pragma once
 
 #include "RE/G/GFxPlayerStats.h"
+#include "RE/G/GMatrix2D.h"
 #include "RE/G/GMatrix3D.h"
 #include "RE/G/GMemory.h"
 #include "RE/G/GNewOverrideBase.h"
+#include "RE/G/GRenderer.h"
 #include "RE/G/GStats.h"
 #include "RE/G/GString.h"
 
@@ -139,7 +141,7 @@ namespace RE
 				kViewMatrix3D = 1 << 13
 			};
 
-			DisplayInfo();                        // Initializes the DisplayInfo structure.
+			DisplayInfo() = default;              // Initializes the DisplayInfo structure.
 			DisplayInfo(double a_x, double a_y);  // Initializes the DisplayInfo structure.
 			DisplayInfo(double a_rotation);       // Initializes the DisplayInfo structure.
 			DisplayInfo(bool a_visible);          // Initializes the DisplayInfo structure.
@@ -185,26 +187,26 @@ namespace RE
 			void ClearFlags(Flag a_flags);
 
 			// members
-			double                                _x;              // 00
-			double                                _y;              // 08
-			double                                _rotation;       // 10
-			double                                _xScale;         // 18
-			double                                _yScale;         // 20
-			double                                _alpha;          // 28
-			bool                                  _visible;        // 30
-			std::uint8_t                          _pad31;          // 31
-			std::uint16_t                         _pad32;          // 32
-			std::uint32_t                         _pad34;          // 34
-			double                                _z;              // 38
-			double                                _xRotation;      // 40
-			double                                _yRotation;      // 48
-			double                                _zScale;         // 50
-			double                                _fov;            // 58
-			GMatrix3D                             _viewMatrix3D;   // 60
-			GMatrix3D                             _perspMatrix3D;  // A0
-			stl::enumeration<Flag, std::uint16_t> _flags;          // E0
-			std::uint16_t                         _padD2;          // E2
-			std::uint32_t                         _padD4;          // E4
+			double                                _x = 0.0;              // 00
+			double                                _y = 0.0;              // 08
+			double                                _rotation = 0.0;       // 10
+			double                                _xScale = 0.0;         // 18
+			double                                _yScale = 0.0;         // 20
+			double                                _alpha = 0.0;          // 28
+			bool                                  _visible = false;      // 30
+			std::uint8_t                          _pad31 = 0;            // 31
+			std::uint16_t                         _pad32 = 0;            // 32
+			std::uint32_t                         _pad34 = 0;            // 34
+			double                                _z = 0.0;              // 38
+			double                                _xRotation = 0.0;      // 40
+			double                                _yRotation = 0.0;      // 48
+			double                                _zScale = 0.0;         // 50
+			double                                _fov = 0.0;            // 58
+			GMatrix3D                             _viewMatrix3D;         // 60
+			GMatrix3D                             _perspMatrix3D;        // A0
+			stl::enumeration<Flag, std::uint16_t> _flags = Flag::kNone;  // E0
+			std::uint16_t                         _padD2 = 0;            // E2
+			std::uint32_t                         _padD4 = 0;            // E4
 		};
 		static_assert(sizeof(DisplayInfo) == 0xE8);
 
@@ -239,6 +241,7 @@ namespace RE
 			bool SetMember(void* a_data, const char* a_name, const GFxValue& a_value, bool a_isDObj);
 			bool Invoke(void* a_data, GFxValue* a_result, const char* a_name, const GFxValue* a_args, UPInt a_numArgs, bool a_isDObj);
 			bool DeleteMember(void* a_data, const char* a_name, bool a_isDObj);
+			void VisitMembers(void* a_data, ObjVisitor* a_visitor, bool a_isDObj) const;
 
 			std::uint32_t GetArraySize(void* a_data) const;
 			bool          SetArraySize(void* a_data, std::uint32_t a_size);
@@ -249,6 +252,10 @@ namespace RE
 
 			bool GetDisplayInfo(void* a_data, DisplayInfo* a_info) const;
 			bool SetDisplayInfo(void* a_data, const DisplayInfo& a_info);
+			bool GetDisplayMatrix(void* a_data, GMatrix2D* a_mat) const;
+			bool SetDisplayMatrix(void* a_data, const GMatrix2D& a_mat);
+			bool GetCxform(void* a_data, GRenderer::Cxform* a_cx) const;
+			bool SetCxform(void* a_data, const GRenderer::Cxform& a_cx);
 
 			bool SetText(void* a_data, const char* a_text, bool a_isHTML);
 
@@ -265,6 +272,8 @@ namespace RE
 
 		using ObjectVisitor = ObjectInterface::ObjVisitor;
 		using ArrayVisitor = ObjectInterface::ArrVisitor;
+
+		using ObjectVisitFn = std::function<void(const char*, const RE::GFxValue&)>;
 
 		GFxValue();
 		GFxValue(ValueType a_rhs);
@@ -351,6 +360,8 @@ namespace RE
 		bool Invoke(const char* a_name, GFxValue* a_result, const GFxValue* a_args, UPInt a_numArgs);
 		bool Invoke(const char* a_name, GFxValue* a_result = nullptr);
 		bool DeleteMember(const char* a_name);
+		void VisitMembers(ObjectVisitor* a_visitor) const;
+		void VisitMembers(ObjectVisitFn&& a_visitor) const;
 
 		template <std::size_t N>
 		inline bool Invoke(const char* a_name, const std::array<GFxValue, N>& a_args)
@@ -377,6 +388,10 @@ namespace RE
 		// AS MovieClips, Buttons, TextFields support. Valid for DisplayObject type
 		bool GetDisplayInfo(DisplayInfo* a_info) const;
 		bool SetDisplayInfo(const DisplayInfo& a_info);
+		bool GetDisplayMatrix(GMatrix2D* a_mat) const;
+		bool SetDisplayMatrix(const GMatrix2D& a_mat);
+		bool GetCxform(GRenderer::Cxform* a_cx) const;
+		bool SetCxform(const GRenderer::Cxform& a_cx);
 
 		// AS TextField support. Valid for DisplayObject type.
 		bool SetText(const char* a_text);
