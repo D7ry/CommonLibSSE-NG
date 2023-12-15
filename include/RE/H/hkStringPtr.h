@@ -12,6 +12,7 @@ namespace RE
 		};
 
 		explicit hkStringPtr(std::string_view a_data, const std::uint32_t a_mask = kMask, const bool a_mark = kManaged);
+		hkStringPtr(const char* a_data);
 
 		// member types
 		using size_type = std::int32_t;

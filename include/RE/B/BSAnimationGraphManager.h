@@ -84,6 +84,19 @@ namespace RE
 		};
 		static_assert(sizeof(AnimationVariable) == 0x10);
 
+		class ClipData
+		{
+		public:
+			BSFixedString clipName;
+			float         time_scale;
+			float         field_C;
+			float         pos_scale;
+			float         field_14;
+			bool          Xneg;
+			uint8_t       pad19[7];
+		};
+		static_assert(sizeof(ClipData) == 0x20);
+
 		~BSAnimationGraphManager() override;  // 00
 
 		// override (BSTEventSink<BSAnimationGraphEvent>)
@@ -108,6 +121,20 @@ namespace RE
 		[[nodiscard]] inline const RUNTIME_DATA& GetRuntimeData() const noexcept
 		{
 			return REL::RelocateMemberIfNewer<RUNTIME_DATA>(SKSE::RUNTIME_SSE_1_6_629, this, 0x98, 0xA0);
+		}
+		
+		bool QueryAnimations(const BSScrapArray<BSFixedString>& events, int activeGraph_ind, BSFixedString& projectName, BSScrapArray<ClipData>& clips)
+		{
+			using func_t = bool(BSAnimationGraphManager*, const BSScrapArray<BSFixedString>&, int, BSFixedString&, BSScrapArray<ClipData>&);
+			REL::Relocation<func_t> func{ RELOCATION_ID(62432, 0) };  
+			return func(this, events, activeGraph_ind, projectName, clips);
+		}
+
+		bool QueryAnimations(float mb_from_time, BSFixedString& projectName, BSScrapArray<ClipData>& array, int activeGraph_ind)
+		{
+			using func_t = bool(BSAnimationGraphManager*, float, BSFixedString&, BSScrapArray<ClipData>&, int);
+			REL::Relocation<func_t> func{ RELOCATION_ID(62431, 0) };  
+			return func(this, mb_from_time, projectName, array, activeGraph_ind);
 		}
 
 		// members

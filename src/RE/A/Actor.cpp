@@ -127,6 +127,13 @@ namespace RE
 		return func(this, a_actor);
 	}
 
+	bool Actor::CanFly() const
+	{
+		using func_t = decltype(&Actor::CanFly);
+		REL::Relocation<func_t> func{ RELOCATION_ID(36238, 0) };  
+		return func(this);
+	}
+
 	bool Actor::CanFlyHere() const
 	{
 		const auto* worldSpace = GetWorldspace();
@@ -258,6 +265,13 @@ namespace RE
 		using func_t = decltype(&Actor::EvaluatePackage);
 		REL::Relocation<func_t> func{ RELOCATION_ID(36407, 37401) };
 		return func(this, a_immediate, a_resetAI);
+	}
+
+	bool Actor::FightsInWater() const
+	{
+		using func_t = decltype(&Actor::FightsInWater);
+		REL::Relocation<func_t> func{ RELOCATION_ID(36236, 0) };  
+		return func(this);
 	}
 
 	TESNPC* Actor::GetActorBase()
@@ -603,6 +617,13 @@ namespace RE
 		return func(this);
 	}
 
+	float Actor::GetTotalCarryWeight()
+	{
+		using func_t = decltype(&Actor::GetTotalCarryWeight);
+		REL::Relocation<func_t> func{ RELOCATION_ID(36456, 37452) };
+		return func(this);
+	}
+
 	TESFaction* Actor::GetVendorFaction()
 	{
 		auto* _vendorFaction = GetActorRuntimeData().vendorFaction;
@@ -720,6 +741,13 @@ namespace RE
 		return func(this, a_spell);
 	}
 
+	void Actor::InitiateDoNothingPackage()
+	{
+		using func_t = decltype(&Actor::InitiateDoNothingPackage);
+		REL::Relocation<func_t> func{ RELOCATION_ID(36408, 37402) };
+		return func(this);
+	}
+
 	void Actor::InterruptCast(bool a_restoreMagicka) const
 	{
 		using func_t = decltype(&Actor::InterruptCast);
@@ -792,6 +820,13 @@ namespace RE
 		return GetActorRuntimeData().boolFlags.all(BOOL_FLAGS::kEssential);
 	}
 
+	bool Actor::IsEssentialDown() const
+	{
+		using func_t = decltype(&Actor::IsEssentialDown);
+		REL::Relocation<func_t> func{ RELOCATION_ID(48460, 0) };  
+		return func(this);
+	}
+
 	bool Actor::IsFactionInCrimeGroup(const TESFaction* a_faction) const
 	{
 		auto crimFac = GetCrimeFaction();
@@ -823,6 +858,13 @@ namespace RE
 		using func_t = decltype(&Actor::IsHostileToActor);
 		REL::Relocation<func_t> func{ Offset::Actor::GetHostileToActor };
 		return func(this, a_actor);
+	}
+
+	bool Actor::IsInBleedout() const
+	{
+		using func_t = decltype(&Actor::IsInBleedout);
+		REL::Relocation<func_t> func{ RELOCATION_ID(48461, 0) };  
+		return func(this);
 	}
 
 	bool Actor::IsInCastPowerList(SpellItem* a_power)
@@ -869,6 +911,13 @@ namespace RE
 	bool Actor::IsOnMount() const
 	{
 		return !IsAMount() && extraList.HasType(ExtraDataType::kInteraction);
+	}
+
+	bool Actor::IsOnWaterTriangle() const
+	{
+		using func_t = decltype(&Actor::IsOnWaterTriangle);
+		REL::Relocation<func_t> func{ RELOCATION_ID(36817, 0) };  
+		return func(this);
 	}
 
 	bool Actor::IsOverEncumbered() const
@@ -995,6 +1044,13 @@ namespace RE
 	void Actor::RemoveExtraArrows3D()
 	{
 		extraList.RemoveByType(ExtraDataType::kAttachedArrows3D);
+	}
+
+	void Actor::RemoveFromFaction(RE::TESFaction* a_faction)
+	{
+		using func_t = decltype(&Actor::RemoveFromFaction);
+		REL::Relocation<func_t> func{ RELOCATION_ID(36680, 37688) };
+		return func(this, a_faction);
 	}
 
 	bool Actor::RemoveSpell(SpellItem* a_spell)
