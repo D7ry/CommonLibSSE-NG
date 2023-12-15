@@ -10,6 +10,14 @@ namespace RE
 		REL::Relocation<func_t> func{ RELOCATION_ID(56806, 57236) };
 		func(*this, a_data.data(), a_mask, a_mark);
 	}
+	
+	hkStringPtr::hkStringPtr(const char* a_data) :
+		_data(nullptr)
+	{
+		using func_t = std::add_pointer_t<void(hkStringPtr&, const char*)>;
+		REL::Relocation<func_t> func{ RELOCATION_ID(56801, 57231) };
+		func(*this, a_data);
+	}
 
 	const char* hkStringPtr::data() const noexcept
 	{

@@ -48,6 +48,8 @@ namespace RE
 	class TrespassPackage;
 	struct ActorMotionFeedbackData;
 	struct ActorMotionFeedbackOutput;
+	struct HighProcessData;
+	struct MiddleHighProcessData;
 
 	enum class ACTOR_CRITICAL_STAGE
 	{
@@ -503,6 +505,7 @@ namespace RE
 		void                                    AllowPCDialogue(bool a_talk);
 		void                                    CastPermanentMagic(bool a_wornItemEnchantments, bool a_baseSpells, bool a_raceSpells, bool a_everyActorAbility);
 		[[nodiscard]] bool                      CanAttackActor(Actor* a_actor);
+		[[nodiscard]] bool                      CanFly() const;
 		[[nodiscard]] bool                      CanFlyHere() const;
 		[[nodiscard]] bool                      CanNavigateToPosition(const NiPoint3& a_pos, const NiPoint3& a_new_pos, float a_speed = 2.0f, float a_distance = 64.0f) const;
 		[[nodiscard]] bool                      CanOfferServices() const;
@@ -521,6 +524,7 @@ namespace RE
 		void                                    EnableAI(bool a_enable);
 		void                                    EndInterruptPackage(bool a_skipDialogue);
 		void                                    EvaluatePackage(bool a_immediate = false, bool a_resetAI = false);
+		[[nodiscard]] bool                      FightsInWater() const;
 		[[nodiscard]] TESNPC*                   GetActorBase();
 		[[nodiscard]] const TESNPC*             GetActorBase() const;
 		[[nodiscard]] float                     GetActorValueModifier(ACTOR_VALUE_MODIFIER a_modifier, ActorValue a_value) const;
@@ -551,7 +555,6 @@ namespace RE
 		[[nodiscard]] std::uint16_t             GetLevel() const;
 		[[nodiscard]] bool                      GetMount(NiPointer<Actor>& a_outMount);
 		[[nodiscard]] bool                      GetMountedBy(NiPointer<Actor>& a_outRider);
-		[[nodiscard]] float                     GetMovementDirection() const;
 		[[nodiscard]] double                    GetMoveDirectionRelativeToFacing();
 		[[nodiscard]] ObjectRefHandle           GetOccupiedFurniture() const;
 		[[nodiscard]] PROCESS_TYPE              GetProcessLevel() const;
@@ -561,6 +564,7 @@ namespace RE
 		[[nodiscard]] TESObjectARMO*            GetSkin() const;
 		[[nodiscard]] TESObjectARMO*            GetSkin(BGSBipedObjectForm::BipedObjectSlot a_slot, bool a_noInit = false);
 		[[nodiscard]] SOUL_LEVEL                GetSoulSize() const;
+		[[nodiscard]] float                     GetTotalCarryWeight();
 		[[nodiscard]] TESFaction*               GetVendorFaction();
 		[[nodiscard]] const TESFaction*         GetVendorFaction() const;
 		[[nodiscard]] float                     GetVoiceRecoveryTime();
@@ -574,6 +578,7 @@ namespace RE
 		[[nodiscard]] bool                      HasPerk(BGSPerk* a_perk) const;
 		[[nodiscard]] bool                      HasShout(TESShout* a_shout) const;
 		[[nodiscard]] bool                      HasSpell(SpellItem* a_spell) const;
+		void                                    InitiateDoNothingPackage();
 		void                                    InterruptCast(bool a_restoreMagicka) const;
 		[[nodiscard]] bool                      IsAttacking() const;
 		[[nodiscard]] bool                      IsAIEnabled() const;
@@ -586,11 +591,13 @@ namespace RE
 		[[nodiscard]] bool                      IsCommandedActor() const;
 		[[nodiscard]] bool                      IsCurrentShout(SpellItem* a_power);
 		[[nodiscard]] bool                      IsEssential() const;
+		[[nodiscard]] bool                      IsEssentialDown() const;
 		[[nodiscard]] bool                      IsFactionInCrimeGroup(const TESFaction* a_faction) const;
 		[[nodiscard]] bool                      IsGhost() const;
 		[[nodiscard]] bool                      IsGuard() const;
 		[[nodiscard]] bool                      IsHostileToActor(Actor* a_actor);
 		[[nodiscard]] bool                      IsLeveled() const;
+		[[nodiscard]] bool                      IsInBleedout() const;
 		[[nodiscard]] bool                      IsInCastPowerList(SpellItem* a_power);
 		[[nodiscard]] bool                      IsInJumpState() const;
 		[[nodiscard]] constexpr bool            IsInKillMove() const noexcept { return GetActorRuntimeData().boolFlags.all(BOOL_FLAGS::kIsInKillMove); }
@@ -599,6 +606,7 @@ namespace RE
 		[[nodiscard]] bool                      IsLimbGone(std::uint32_t a_limb);
 		[[nodiscard]] bool                      IsMoving() const;
 		[[nodiscard]] bool                      IsOnMount() const;
+		[[nodiscard]] bool                      IsOnWaterTriangle() const;
 		[[nodiscard]] bool                      IsOverEncumbered() const;
 		[[nodiscard]] bool                      IsPlayerTeammate() const;
 		[[nodiscard]] bool                      IsProtected() const;
@@ -610,13 +618,13 @@ namespace RE
 		[[nodiscard]] bool                      IsSummonedByPlayer() const noexcept;
 		[[nodiscard]] bool                      IsTrespassing() const;
 		void                                    KillImmediate();
-		void                                    MoveToPackageLoaction(bool a_arg1 = false) const;
 		[[nodiscard]] constexpr bool            NotShowOnStealthMeter() const noexcept { return GetActorRuntimeData().boolFlags.any(BOOL_FLAGS::kDoNotShowOnStealthMeter); }
 		void                                    PlayASound(BSSoundHandle& a_result, FormID a_formID, bool a_unk03, std::uint32_t a_flags);
 		void                                    ProcessVATSAttack(MagicCaster* a_caster, bool a_hasTargetAnim, TESObjectREFR* a_target, bool a_leftHand);
 		void                                    RemoveAnimationGraphEventSink(BSTEventSink<BSAnimationGraphEvent>* a_sink) const;
 		void                                    RemoveCastScroll(SpellItem* a_spell, MagicSystem::CastingSource a_source);
 		void                                    RemoveExtraArrows3D();
+		void                                    RemoveFromFaction(TESFaction* a_faction);
 		void                                    RemoveOutfitItems(BGSOutfit* a_outfit);
 		bool                                    RemoveSpell(SpellItem* a_spell);
 		[[nodiscard]] std::int32_t              RequestDetectionLevel(Actor* a_target, DETECTION_PRIORITY a_priority = DETECTION_PRIORITY::kNormal);
@@ -634,7 +642,6 @@ namespace RE
 		void                                    TrespassAlarm(TESObjectREFR* a_ref, TESForm* a_ownership, std::int32_t a_crime);
 		void                                    UpdateArmorAbility(TESForm* a_armor, ExtraDataList* a_extraData);
 		void                                    UpdateAwakeSound(NiAVObject* a_obj3D);
-		bool                                    Update3D();
 		void                                    Update3DModel();
 		void                                    UpdateHairColor();
 		[[nodiscard]] bool                      UpdateNavPos(const NiPoint3& a_pos, const NiPoint3& a_new_pos, float a_speed, float a_distance) const;
