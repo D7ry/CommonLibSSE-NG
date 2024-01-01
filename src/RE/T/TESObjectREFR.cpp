@@ -618,7 +618,7 @@ namespace RE
 			return false;
 		}
 
-		auto keyword = dobj->GetDefaultObject<BGSKeyword>(keywordType);
+		auto keyword = dobj->GetObject<BGSKeyword>(keywordType);
 		return keyword ? HasKeyword(keyword) : false;
 	}
 

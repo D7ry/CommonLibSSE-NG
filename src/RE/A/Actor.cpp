@@ -476,7 +476,7 @@ namespace RE
 			return 0;
 		}
 
-		const auto gold = dobj->GetDefaultObject<TESObjectMISC>(DefaultObjectID::kGold);
+		const auto gold = dobj->GetObject<TESObjectMISC>(DefaultObjectID::kGold);
 		const auto it = inv.find(*gold);
 		return it != inv.end() ? it->second.first : 0;
 	}

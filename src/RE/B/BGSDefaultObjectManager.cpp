@@ -23,7 +23,7 @@ namespace RE
 		}
 	}
 
-	TESForm** BGSDefaultObjectManager::GetDefaultObject(DefaultObjectID a_object) noexcept
+	TESForm** BGSDefaultObjectManager::GetObject(DefaultObjectID a_object) noexcept
 	{
 		assert(stl::to_underlying(a_object) < Relocate(364, 364, 369));
 		auto idx = MapIndex(stl::to_underlying(a_object));
@@ -31,8 +31,8 @@ namespace RE
 			return nullptr;
 		}
 		return RelocateMember<bool*>(this, 0xB80, 0xBA8)[idx] ?
-		           &RelocateMember<TESForm**>(this, 0x20, 0x20)[idx] :
-		           nullptr;
+                   &RelocateMember<TESForm**>(this, 0x20, 0x20)[idx] :
+                   nullptr;
 	}
 
 	bool BGSDefaultObjectManager::IsObjectInitialized(DefaultObjectID a_object) const noexcept
