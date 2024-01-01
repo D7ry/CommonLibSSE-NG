@@ -130,7 +130,7 @@ namespace RE
 	bool Actor::CanFly() const
 	{
 		using func_t = decltype(&Actor::CanFly);
-		REL::Relocation<func_t> func{ RELOCATION_ID(36238, 0) };  
+		REL::Relocation<func_t> func{ RELOCATION_ID(36238, 0) };
 		return func(this);
 	}
 
@@ -270,7 +270,7 @@ namespace RE
 	bool Actor::FightsInWater() const
 	{
 		using func_t = decltype(&Actor::FightsInWater);
-		REL::Relocation<func_t> func{ RELOCATION_ID(36236, 0) };  
+		REL::Relocation<func_t> func{ RELOCATION_ID(36236, 0) };
 		return func(this);
 	}
 
@@ -823,7 +823,7 @@ namespace RE
 	bool Actor::IsEssentialDown() const
 	{
 		using func_t = decltype(&Actor::IsEssentialDown);
-		REL::Relocation<func_t> func{ RELOCATION_ID(48460, 0) };  
+		REL::Relocation<func_t> func{ RELOCATION_ID(48460, 0) };
 		return func(this);
 	}
 
@@ -863,7 +863,7 @@ namespace RE
 	bool Actor::IsInBleedout() const
 	{
 		using func_t = decltype(&Actor::IsInBleedout);
-		REL::Relocation<func_t> func{ RELOCATION_ID(48461, 0) };  
+		REL::Relocation<func_t> func{ RELOCATION_ID(48461, 0) };
 		return func(this);
 	}
 
@@ -916,7 +916,7 @@ namespace RE
 	bool Actor::IsOnWaterTriangle() const
 	{
 		using func_t = decltype(&Actor::IsOnWaterTriangle);
-		REL::Relocation<func_t> func{ RELOCATION_ID(36817, 0) };  
+		REL::Relocation<func_t> func{ RELOCATION_ID(36817, 0) };
 		return func(this);
 	}
 
@@ -924,6 +924,13 @@ namespace RE
 	{
 		using func_t = decltype(&Actor::IsOverEncumbered);
 		REL::Relocation<func_t> func{ RELOCATION_ID(36457, 37453) };
+		return func(this);
+	}
+
+	bool Actor::IsPathing() const
+	{
+		using func_t = decltype(&Actor::IsPathing);
+		REL::Relocation<func_t> func{ RELOCATION_ID(36812, 0) };
 		return func(this);
 	}
 

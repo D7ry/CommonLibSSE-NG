@@ -608,6 +608,7 @@ namespace RE
 		[[nodiscard]] bool                      IsOnMount() const;
 		[[nodiscard]] bool                      IsOnWaterTriangle() const;
 		[[nodiscard]] bool                      IsOverEncumbered() const;
+		[[nodiscard]] bool                      IsPathing() const;
 		[[nodiscard]] bool                      IsPlayerTeammate() const;
 		[[nodiscard]] bool                      IsProtected() const;
 		[[nodiscard]] bool                      IsRunning() const;
