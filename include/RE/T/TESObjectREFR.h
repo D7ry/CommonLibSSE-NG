@@ -368,6 +368,7 @@ namespace RE
 		ModelReferenceEffect*                           ApplyArtObject(BGSArtObject* a_artObject, float a_duration = -1.0f, TESObjectREFR* a_facingRef = nullptr, bool a_faceTarget = false, bool a_attachToCamera = false, NiAVObject* a_attachNode = nullptr, bool a_interfaceEffect = false);
 		ShaderReferenceEffect*                          ApplyEffectShader(TESEffectShader* a_effectShader, float a_duration = -1.0f, TESObjectREFR* a_facingRef = nullptr, bool a_faceTarget = false, bool a_attachToCamera = false, NiAVObject* a_attachNode = nullptr, bool a_interfaceEffect = false);
 		[[nodiscard]] bool                              CanBeMoved();
+		void                                            ClearDestruction();
 		ObjectRefHandle                                 CreateRefHandle();
 		void                                            DoTrap(TrapData& a_data);
 		void                                            DoTrap(TrapEntry* a_trap, TargetEntry* a_target);

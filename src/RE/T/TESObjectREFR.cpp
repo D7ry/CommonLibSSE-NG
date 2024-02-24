@@ -77,6 +77,13 @@ namespace RE
 		return func(this);
 	}
 
+	void TESObjectREFR::ClearDestruction()
+	{
+		using func_t = decltype(&TESObjectREFR::ClearDestruction);
+		REL::Relocation<func_t> func{ RELOCATION_ID(14082, 14181) };
+		return func(this);
+	}
+
 	ObjectRefHandle TESObjectREFR::CreateRefHandle()
 	{
 		return GetHandle();
