@@ -7,6 +7,7 @@
 namespace RE
 {
 	class BGSLocation;
+	class TESObjectREFR;
 
 	struct FILE_POS_ROT
 	{
@@ -26,6 +27,8 @@ namespace RE
 		// override (BSExtraData)
 		ExtraDataType GetType() const override;                             // 01 - { return kStartingPosition; }
 		bool          IsNotEqual(const BSExtraData* a_rhs) const override;  // 02 - { return location != a_rhs->location || startPosition.pos != a_rhs->startPosition.pos || startPosition.rot != a_rhs->startPosition.rot; }
+
+		void SetStartingPosition(TESObjectREFR* a_refr, const NiPoint3& a_position, const NiPoint3& a_rotation, BGSLocation* a_location);
 
 		// members
 		FILE_POS_ROT startPosition;  // 10
