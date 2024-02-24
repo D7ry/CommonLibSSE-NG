@@ -14,6 +14,8 @@ namespace RE
 	class CombatAnimation : public TESActionData
 	{
 	public:
+		virtual ~CombatAnimation() override;  // 00
+
 		enum class ANIM : uint32_t
 		{
 			kActionRightAttack,
@@ -35,12 +37,15 @@ namespace RE
 			kFail
 		};
 
-		CombatAnimation(Actor* actor, ANIM anim);
-		CombatAnimation(Actor* actor, TESObjectREFR* target, ANIM anim);
-		CombatAnimation(Actor* actor, BGSAction* action);
+		CombatAnimation* Ctor(Actor* a_actor, ANIM a_anim);
+		CombatAnimation* Ctor(Actor* a_actor, TESObjectREFR* a_target, ANIM a_anim);
+		CombatAnimation* Ctor(Actor* a_actor, BGSAction* a_action);
 
-		static bool Execute(Actor* actor, CombatAnimation::ANIM anim);
-		static bool Execute(Actor* actor, TESObjectREFR* target, CombatAnimation::ANIM anim);
+		static CombatAnimation* Create(Actor* a_actor, ANIM a_anim);
+		static CombatAnimation* Create(Actor* a_actor, BGSAction* a_action);
+
+		static bool Execute(Actor* a_actor, CombatAnimation::ANIM a_anim);
+		static bool Execute(Actor* a_actor, TESObjectREFR* target, CombatAnimation::ANIM a_anim);
 
 		bool  Check();
 		bool  Execute();  // { return Process(); }
@@ -54,7 +59,7 @@ namespace RE
 		// members
 		BSScrapArray<AnimationSystemUtils::UtilsClipData> data;
 		LoadedStatus                                      status;
-		uint32_t                                          pad84;
+		uint32_t                                          pad84;  //84
 	};
-	//static_assert(sizeof(CombatAnimation) == 0x88);
+	static_assert(sizeof(CombatAnimation) == 0x88);
 }
