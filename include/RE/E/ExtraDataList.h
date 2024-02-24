@@ -8,6 +8,7 @@
 #include "RE/E/ExtraLevCreaModifier.h"
 #include "RE/F/FormTypes.h"
 #include "RE/M/MemoryManager.h"
+#include "RE/N/NiPoint3.h"
 #include "RE/S/SoulLevels.h"
 
 namespace RE
@@ -185,6 +186,7 @@ namespace RE
 		BGSEncounterZone*     GetEncounterZone();
 		ExtraTextDisplayData* GetExtraTextDisplayData();
 		TESObjectREFR*        GetLinkedRef(BGSKeyword* a_keyword);
+		float                 GetObjectHealth() const;
 		TESForm*              GetOwner();
 		SOUL_LEVEL            GetSoulLevel() const;
 		ObjectRefHandle       GetTeleportLinkedDoor();
@@ -193,6 +195,7 @@ namespace RE
 		void                  SetExtraFlags(ExtraFlags::Flag a_flags, bool a_enable);
 		void                  SetInventoryChanges(InventoryChanges* a_changes);
 		void                  SetOwner(TESForm* a_owner);
+		void                  SetStartingPosition(TESObjectREFR* a_refr, const NiPoint3& a_position, const NiPoint3& a_rotation, BGSLocation* a_location);
 
 	private:
 		[[nodiscard]] BSExtraData*     GetByTypeImpl(ExtraDataType a_type) const;
